@@ -25,7 +25,7 @@ def load_data(file_path):
     print('Number of columns:',len(DF.columns))
     print('Number of rows:',len(DF))
     print('Name of columns:',DF.columns)
-    
+
     lengths=[]
     samples=[]
     for k in DF.Name.unique().tolist():
@@ -33,26 +33,20 @@ def load_data(file_path):
         if len(DF[DF['Name']==k])>=120:
             temp=DF[DF['Name']==k]
             samples.append(temp.iloc[:120,:])
-    sns.distplot(lengths)
+    # sns.distplot(lengths)
     print('Number of samples:',len(samples))
     print('Number of Names:',len(DF.Name.unique().tolist()))
 
-    samples=pd.concat(samples)
+    all_samples=pd.concat(samples)
     np_samples=[]
-    for k in samples.Name.unique().tolist():
-        np_samples.append(np.array(samples[samples['Name']==k]))
+    for k in all_samples.Name.unique().tolist():
+        temp_df=all_samples[all_samples['Name']==k]
+        temp_df=temp_df.drop('Name',axis=1)
+        ### Filling NaN values with mean of the column
+        temp_df=temp_df.fillna(temp_df.mean())
+        np_samples.append(np.array(temp_df))
     np_samples=np.array(np_samples)
     print('Shape of np_samples:',np_samples.shape)
     return np_samples
 
-def split_train_val(data,ratio=0.7):
-    N, D, _ = data.shape  # Get the shape of the data
-
-    ind_cut = int(ratio * N)
-    ind = np.random.RandomState(seed=42).permutation(N)
-
-    # Split data into training and validation sets
-    X_train = data[ind[:ind_cut]]  # Select training data
-    X_val = data[ind[ind_cut:]]    # Select validation data
-    return X_train,X_val
 
