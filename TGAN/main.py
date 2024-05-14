@@ -22,7 +22,6 @@ def main(params):
         raise ValueError('Unsupported data source. Use 12var or 29var')
 
     ###
-    data = np.random.rand(data.shape[0], data.shape[1], data.shape[2])
     sequence_length = data.shape[1]
     print('Parameter Sequence Length:',sequence_length)
     number_of_features = data.shape[2]
