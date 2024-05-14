@@ -14,7 +14,7 @@ def generate_samples(model_name, params):
     """Generate samples from the trained TimeGAN model."""
     # Load the model
     model = TimeGAN(params)
-    model.load_state_dict(torch.load(f"saved_models/{model_name}/model.pth"))
+    model.load_state_dict(torch.load(f"./saved_models/{model_name}/model.pth"))
     model.eval()
 
     # Generate samples using the generator 10 times
