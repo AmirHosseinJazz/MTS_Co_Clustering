@@ -95,14 +95,13 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=10, help='Number of samples in each mini-batch')
     parser.add_argument('--dis_thresh', type=float, default=0.15, help='Threshold value for discriminator loss')
     parser.add_argument('--num_layers', type=int, default=5, help='Number of layers in the model')
-    parser.add_argument('--embedder_epoch', type=int, default=2, help='Number of epochs for embedding training')
-    parser.add_argument('--supervisor_epochs', type=int, default=2, help='Number of epochs for supervisor training')
-    parser.add_argument('--padding_value', type=int, default=-1, help='Value used for padding sequences')
+    parser.add_argument('--embedder_epoch', type=int, default=300, help='Number of epochs for embedding training')
+    parser.add_argument('--supervisor_epochs', type=int, default=300, help='Number of epochs for supervisor training')
+    parser.add_argument('--padding_value', type=int, default=0, help='Value used for padding sequences')
     parser.add_argument('--module', type=str, default='GRU', help='Type of recurrent module used in the model')
-    parser.add_argument('--device', type=str, default='cpu', help='Device to run the model on (cpu or cuda)')
+    parser.add_argument('--device', type=str, default='cuda', help='Device to run the model on (cpu or cuda)')
     parser.add_argument('--data_source',type=str ,default='29var',help='Data source to use (12var or 29var)')
     args = parser.parse_args()
-
     params = {
         'Z_dim': args.Z_dim,
         'hidden_dim': args.hidden_dim,

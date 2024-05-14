@@ -12,8 +12,11 @@ def embedding_trainer(
     params: Dict
 ) -> None:
     """The training loop for the embedding and recovery functions using wandb."""
+    device=params['device']
     for epoch in range(params['embedder_epoch']):
         for X_mb, T_mb in dataloader:
+            X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params['device'])
+            T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params['device'])
             model.zero_grad()
             _, E_loss0, E_loss_T0 = model(X=X_mb, T=T_mb, Z=None, obj="autoencoder")
             loss = np.sqrt(E_loss_T0.item())
@@ -33,9 +36,13 @@ def supervisor_trainer(
     s_opt: torch.optim.Optimizer, 
     params: Dict
 ) -> None:
+    
     """The training loop for the supervisor function using wandb."""
+    device=params['device']
     for epoch in range(params['supervisor_epochs']):
         for X_mb, T_mb in dataloader:
+            X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params['device'])
+            T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params['device'])
             model.zero_grad()
             S_loss = model(X=X_mb, T=T_mb, Z=None, obj="supervisor")
             S_loss.backward()
@@ -53,12 +60,15 @@ def joint_trainer(
     d_opt: torch.optim.Optimizer, 
     params: Dict
 ) -> None:
+    device=params['device']
     """The joint training loop using wandb."""
     for epoch in range(params['supervisor_epochs']):
         for X_mb, T_mb in dataloader:
+            X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params['device'])
+            T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params['device'])
             # print('Shape of X_mb:', X_mb.shape)
             # print('Shape of T_mb:', T_mb.shape)
-            Z_mb = torch.rand((params['batch_size'], params['max_seq_len'], params['Z_dim']))
+            Z_mb = torch.rand((params['batch_size'], params['max_seq_len'], params['Z_dim'])).to(device)
             model.zero_grad()
             G_loss = model(X=X_mb, T=T_mb, Z=Z_mb, obj="generator")
             G_loss.backward()

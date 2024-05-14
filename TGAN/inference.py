@@ -17,22 +17,35 @@ def generate_samples(model_name, params):
     model.load_state_dict(torch.load(f"saved_models/{model_name}/model.pth"))
     model.eval()
 
-    # Generate a 1-Dvector of random noise
-    Z = torch.randn(params['batch_size'],params['max_seq_len'], params['Z_dim'])
+    # Generate samples using the generator 10 times
+    generated_samples = []
+    for _ in range(10):
+        # Generate a 1-D vector of random noise
+        Z = torch.randn(params['batch_size'], params['max_seq_len'], params['Z_dim'])
 
-    # Generate samples using the generator
-    with torch.no_grad():
-        samples = model.forward(X=None,T=params['max_seq_len'],Z=Z, obj="inference")
-    
+        # Generate samples using the generator
+        with torch.no_grad():
+            samples = model.forward(X=None, T=params['max_seq_len'], Z=Z, obj="inference")
+        
+        # Move samples to CPU
+        samples = samples.cpu()
+
+        # Append samples to the list
+        generated_samples.append(samples)
+
+    # Concatenate the generated samples
+    generated_samples = torch.cat(generated_samples, dim=0)
+
     # Store samples
     if not os.path.exists(f'../Generated/{model_name}/'):
         os.makedirs(f'../Generated/{model_name}/')
 
-    #print the generated samples
-    print(samples.shape)
-    print(samples[0])
+    # Print the generated samples
+    print(generated_samples.shape)
+    print(generated_samples[0])
+
     # Save the generated samples
-    np.save(f'../Generated/{model_name}/generated_samples.npy', samples)
+    np.save(f'../Generated/{model_name}/generated_samples.npy', generated_samples.numpy())
 
 def encode(data, model_name, params):
     """Encode the data using the trained TimeGAN model."""

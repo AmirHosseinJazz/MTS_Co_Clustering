@@ -308,17 +308,20 @@ if __name__=="__main__":
         real_data,feature_names=load_data('../Data/PreProcessed/12var/df12.xlsx')
     elif params['input_dim'] == 29:
         real_data,feature_names=load_data('../Data/PreProcessed/29var/df29.xlsx')
-
-    # randomly pick 100 samples from real_data
-    real_data = real_data[np.random.choice(real_data.shape[0], params['batch_size'], replace=False)]
-    print('randomly picked samples from real_data to match the dimension of generated_data')
-    # print('Shape of real_data:', real_data.shape)
-    # print('Sample', real_data[0])
     #read numpy from npz file
+
     generated_data=np.load(f'../Generated/{args.model_name}/generated_samples.npy')
     # print('Shape of generated_data:', generated_data.shape)
     # print('Sample', generated_data[0])
     # print(feature_names)
+
+    # randomly pick 100 samples from real_data
+    real_data = real_data[np.random.choice(real_data.shape[0], 100, replace=False)]
+    # print('randomly picked samples from real_data to match the dimension of generated_data')
+    # print('Shape of real_data:', real_data.shape)
+    # print('Sample', real_data[0])
+
+
     if args.method == 'marginal_dist':
         print("Method: Marginal Distribution Comparison")
         print("Results are saved in the folder 'marginal_dist' and subfolder with model name")
