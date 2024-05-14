@@ -43,7 +43,7 @@ def generate_samples(model_name, params):
     # Print the generated samples
     print(generated_samples.shape)
     print(generated_samples[0])
-
+    print(model_name)
     # Save the generated samples
     np.save(f'../Generated/{model_name}/generated_samples.npy', generated_samples.numpy())
 
