@@ -1,0 +1,14 @@
+Z_dim : 50
+hidden_dim : 64
+batch_size : 10
+dis_thresh : 0.15
+num_layers : 5
+embedder_epoch : 300
+supervisor_epochs : 300
+padding_value : 0
+module : GRU
+device : cuda
+data_source : 29var
+input_dim : 29
+max_seq_len : 120
+num_samples : 180
