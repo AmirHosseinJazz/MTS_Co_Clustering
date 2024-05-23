@@ -267,6 +267,8 @@ def shape_based_distances(real_data, generated_data,model_name):
 #     num_features = real_data.shape[2]
 #     metrics = []
 
+
+
 if __name__=="__main__":
     start_time = time.time()
 
