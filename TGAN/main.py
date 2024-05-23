@@ -157,7 +157,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--break_data",
         type=bool,
-        default=True,
+        default=False,
         help="Break the data into smaller sequences",
     )
     parser.add_argument(

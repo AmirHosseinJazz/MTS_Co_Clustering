@@ -1,0 +1,84 @@
+wandb_version: 1
+
+Z_dim:
+  desc: null
+  value: 50
+hidden_dim:
+  desc: null
+  value: 64
+batch_size:
+  desc: null
+  value: 10
+dis_thresh:
+  desc: null
+  value: 0.15
+num_layers:
+  desc: null
+  value: 5
+embedder_epoch:
+  desc: null
+  value: 300
+supervisor_epochs:
+  desc: null
+  value: 300
+padding_value:
+  desc: null
+  value: 0
+module:
+  desc: null
+  value: GRU
+device:
+  desc: null
+  value: cuda
+data_source:
+  desc: null
+  value: 29var
+break_data:
+  desc: null
+  value: false
+break_size:
+  desc: null
+  value: 60
+leave_out_problematic_features:
+  desc: null
+  value: true
+cutoff_data:
+  desc: null
+  value: true
+input_dim:
+  desc: null
+  value: 24
+max_seq_len:
+  desc: null
+  value: 120
+num_samples:
+  desc: null
+  value: 180
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.12
+    cli_version: 0.17.0
+    framework: huggingface
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1716499944
+    t:
+      1:
+      - 1
+      - 55
+      2:
+      - 1
+      - 11
+      - 49
+      - 55
+      3:
+      - 2
+      - 16
+      - 23
+      - 61
+      4: 3.10.12
+      5: 0.17.0
+      8:
+      - 5
+      13: linux-x86_64
