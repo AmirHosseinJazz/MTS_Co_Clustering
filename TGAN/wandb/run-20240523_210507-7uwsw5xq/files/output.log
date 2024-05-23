@@ -1,0 +1,16 @@
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:18: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params['device'])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:19: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params['device'])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/TimeGAN.py:437: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  X=torch.tensor(X, dtype=torch.float32, device=self.device)
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:44: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params['device'])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:45: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params['device'])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:67: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params['device'])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:68: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params['device'])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/TimeGAN.py:442: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Z=torch.tensor(Z, dtype=torch.float32, device=self.device)
