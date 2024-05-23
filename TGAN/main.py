@@ -193,4 +193,5 @@ if __name__ == "__main__":
         "leave_out_problematic_features": args.leave_out_problematic_features,
         "cutoff_data": args.cutoff_data,
     }
+    print(params)
     main(params)
