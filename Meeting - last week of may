@@ -1,7 +1,7 @@
 
 Points to Discuss -
     TimeVAE is done - Check for metrics and quality
-    Breaking up data into smaller chunks tested 
+    Breaking up data into smaller chunks tested - > Done
     Feature engineering on categorical fixed
     Versions of TimeGAN and TimeVAE without Craving Variables -
     Quantutative measures => Discriminative (TimeGAN Paper)-predictive Measure (TimeGan Paper)
@@ -14,3 +14,9 @@ Next to do [embeddings acceptable now]-
     CCTN
     Complex Networks
     
+
+
+
+--TODO:
+inference.py -> Encoding part , data should be according to each model's input
+Fix wandb logs for time gan7

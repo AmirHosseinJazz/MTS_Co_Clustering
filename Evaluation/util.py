@@ -9,6 +9,7 @@ def load_data(
     break_to_smaller=False,
     break_size=60,
     leave_out_problematic_features=True,
+    cutoff_data=True,
 ):
     DF = pd.read_excel(file_path)
     DF["datetime"] = DF["Date"] + " " + DF["Time"]
@@ -53,10 +54,15 @@ def load_data(
             filled_df = pd.concat([remaining, padding_df], ignore_index=True)
             samples.append(filled_df.values)
     else:
-        for k in DF.Name.unique().tolist():
-            if len(DF[DF["Name"] == k]) >= 120:
+        if cutoff_data:
+            for k in DF.Name.unique().tolist():
+                if len(DF[DF["Name"] == k]) >= 120:
+                    temp = DF[DF["Name"] == k]
+                    samples.append(temp.iloc[:120, :].drop(columns="Name").values)
+        else:
+            for k in DF.Name.unique().tolist():
                 temp = DF[DF["Name"] == k]
-                samples.append(temp.iloc[:120, :].drop(columns="Name").values)
+                samples.append(temp.drop(columns="Name").values)
 
     # Print sample statistics
     print("Number of samples:", len(samples))
@@ -64,4 +70,4 @@ def load_data(
     samples = np.array(samples)
 
     print("Shape of _samples:", samples.shape)
-    return samples
+    return samples, DF.columns.tolist()
