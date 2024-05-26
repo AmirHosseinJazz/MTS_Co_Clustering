@@ -1,0 +1,38 @@
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:18: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params["device"])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:19: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params["device"])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/TimeGAN.py:437: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  X=torch.tensor(X, dtype=torch.float32, device=self.device)
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:47: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  X_mb = torch.tensor(X_mb, dtype=torch.float32, device=params["device"])
+/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py:48: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  T_mb = torch.tensor(T_mb, dtype=torch.float32, device=params["device"])
+Traceback (most recent call last):
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/main.py", line 196, in <module>
+    main(params)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/main.py", line 68, in main
+    supervisor_trainer(model=model, dataloader=dataloader, s_opt=s_opt, params=params)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/train.py", line 50, in supervisor_trainer
+    S_loss = model(X=X_mb, T=T_mb, Z=None, obj="supervisor")
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/TimeGAN.py", line 449, in forward
+    loss = self._supervisor_forward(X, T)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/TimeGAN.py", line 292, in _supervisor_forward
+    H = self.embedder(X, T)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/TimeGAN.py", line 29, in forward
+    packed_output, _= self.rnn(packed_input)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/rnn.py", line 1136, in forward
+    result = _VF.gru(input, batch_sizes, hx, self._flat_weights, self.bias,
+KeyboardInterrupt

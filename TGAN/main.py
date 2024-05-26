@@ -53,12 +53,12 @@ def main(params):
     device = params["device"]
     model = TimeGAN(params).to(device)
     e_opt = optim.Adam(
-        list(model.embedder.parameters()) + list(model.recovery.parameters()), lr=0.005
+        list(model.embedder.parameters()) + list(model.recovery.parameters()), lr=0.001
     )
-    r_opt = optim.Adam(list(model.recovery.parameters()), lr=0.005)
-    s_opt = optim.Adam(list(model.supervisor.parameters()), lr=0.005)
-    g_opt = optim.Adam(list(model.generator.parameters()), lr=0.005)
-    d_opt = optim.Adam(list(model.discriminator.parameters()), lr=0.005)
+    r_opt = optim.Adam(list(model.recovery.parameters()), lr=0.001)
+    s_opt = optim.Adam(list(model.supervisor.parameters()), lr=0.001)
+    g_opt = optim.Adam(list(model.generator.parameters()), lr=0.001)
+    d_opt = optim.Adam(list(model.discriminator.parameters()), lr=0.001)
 
     # Training loops
     embedding_trainer(
