@@ -2,51 +2,72 @@ import os
 import numpy as np
 import pandas as pd
 from random import randint
-###
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-mpl.rcParams['figure.dpi'] = 300
-mpl.rcParams['figure.figsize'] = [20, 4]
-import seaborn as sns
-###
-import torch
-from torch.utils.data import DataLoader, TensorDataset
 
-def load_data(file_path):
-    DF=pd.read_excel(file_path)
-    DF['datetime']=DF['Date']+' '+DF['Time']
-    DF['datetime']=pd.to_datetime(DF['datetime'])
-    DF.set_index('datetime',inplace=True)
-    DF.drop(['Date','Time','Duration'],axis=1,inplace=True)
+
+def load_data(
+    file_path,
+    break_to_smaller=False,
+    break_size=60,
+    leave_out_problematic_features=True,
+    cutoff_data=True,
+):
+    DF = pd.read_excel(file_path)
+    DF["datetime"] = DF["Date"] + " " + DF["Time"]
+    DF["datetime"] = pd.to_datetime(DF["datetime"])
+    DF.set_index("datetime", inplace=True)
+    if leave_out_problematic_features and "df29" in file_path:
+        DF = DF.drop(
+            columns=[
+                "Crave_Food",
+                "Cravings",
+                "With how many people",
+                "Eating",
+                "Eating_healthy",
+            ]
+        )
+    DF.drop(["Date", "Time", "Duration"], axis=1, inplace=True)
     DF.sort_index(inplace=True)
     #
 
-    print('Number of unique Names:',DF['Name'].nunique())
-    print('Number of columns:',len(DF.columns))
-    print('Number of rows:',len(DF))
-    print('Name of columns:',DF.columns)
+    # print("Number of unique Names:", DF["Name"].nunique())
+    # print("Number of columns:", len(DF.columns))
+    # print("Number of rows:", len(DF))
+    # print("Name of columns:", DF.columns)
 
-    lengths=[]
-    samples=[]
-    for k in DF.Name.unique().tolist():
-        lengths.append(len(DF[DF['Name']==k]))
-        if len(DF[DF['Name']==k])>=120:
-            temp=DF[DF['Name']==k]
-            samples.append(temp.iloc[:120,:])
-    # sns.distplot(lengths)
-    print('Number of samples:',len(samples))
-    print('Number of Names:',len(DF.Name.unique().tolist()))
+    samples = []
+    if break_to_smaller:
+        for k in DF.Name.unique().tolist():
+            temp_df = DF[DF.Name == k]
+            # print(len(temp_df))
+            # print(f"{len(temp_df)//break_size} samples")
+            for i in range(len(temp_df) // break_size):
+                samples.append(
+                    temp_df.iloc[i * break_size : (i + 1) * break_size]
+                    .drop(columns="Name")
+                    .values
+                )
+            remaining = temp_df.iloc[(i + 1) * break_size :].drop(columns="Name")
+            pad_length = break_size - len(remaining)
+            padding_df = pd.DataFrame(
+                -1, index=np.arange(pad_length), columns=remaining.columns
+            )
+            filled_df = pd.concat([remaining, padding_df], ignore_index=True)
+            samples.append(filled_df.values)
+    else:
+        if cutoff_data:
+            for k in DF.Name.unique().tolist():
+                if len(DF[DF["Name"] == k]) >= 120:
+                    temp = DF[DF["Name"] == k]
+                    samples.append(temp.iloc[:120, :].drop(columns="Name").values)
+        else:
+            for k in DF.Name.unique().tolist():
+                temp = DF[DF["Name"] == k]
+                samples.append(temp.drop(columns="Name").values)
 
-    all_samples=pd.concat(samples)
-    np_samples=[]
-    for k in all_samples.Name.unique().tolist():
-        temp_df=all_samples[all_samples['Name']==k]
-        temp_df=temp_df.drop('Name',axis=1)
-        ### Filling NaN values with mean of the column
-        temp_df=temp_df.fillna(temp_df.mean())
-        np_samples.append(np.array(temp_df))
-    np_samples=np.array(np_samples)
-    print('Shape of np_samples:',np_samples.shape)
-    return np_samples
+    # Print sample statistics
+    print("Number of samples:", len(samples))
 
+    samples = np.array(samples)
 
+    print("Shape of _samples:", samples.shape)
+    return samples

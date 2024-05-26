@@ -53,12 +53,12 @@ def main(params):
     device = params["device"]
     model = TimeGAN(params).to(device)
     e_opt = optim.Adam(
-        list(model.embedder.parameters()) + list(model.recovery.parameters()), lr=0.001
+        list(model.embedder.parameters()) + list(model.recovery.parameters()), lr=0.005
     )
-    r_opt = optim.Adam(list(model.recovery.parameters()), lr=0.001)
-    s_opt = optim.Adam(list(model.supervisor.parameters()), lr=0.001)
-    g_opt = optim.Adam(list(model.generator.parameters()), lr=0.001)
-    d_opt = optim.Adam(list(model.discriminator.parameters()), lr=0.001)
+    r_opt = optim.Adam(list(model.recovery.parameters()), lr=0.005)
+    s_opt = optim.Adam(list(model.supervisor.parameters()), lr=0.005)
+    g_opt = optim.Adam(list(model.generator.parameters()), lr=0.005)
+    d_opt = optim.Adam(list(model.discriminator.parameters()), lr=0.005)
 
     # Training loops
     embedding_trainer(
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=10,
+        default=15,
         help="Number of samples in each mini-batch",
     )
     parser.add_argument(
@@ -124,13 +124,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--embedder_epoch",
         type=int,
-        default=300,
+        default=500,
         help="Number of epochs for embedding training",
     )
     parser.add_argument(
         "--supervisor_epochs",
         type=int,
-        default=300,
+        default=500,
         help="Number of epochs for supervisor training",
     )
     parser.add_argument(
@@ -193,5 +193,4 @@ if __name__ == "__main__":
         "leave_out_problematic_features": args.leave_out_problematic_features,
         "cutoff_data": args.cutoff_data,
     }
-    print(params)
     main(params)

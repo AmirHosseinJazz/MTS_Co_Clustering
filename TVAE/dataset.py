@@ -1,30 +1,19 @@
-# -*- coding: UTF-8 -*-
-import numpy as np
 import torch
+from torch.utils.data import Dataset, DataLoader
 
-class TimeVAEdataset(torch.utils.data.Dataset):
-    def __init__(self, data, temporal_data):
+
+class TimeVAEdataset(Dataset):
+    def __init__(self, data):
         """
-        Assumes data is a NumPy array that needs to be converted to a tensor.
-        temporal_data is assumed to be a list or a similarly indexable collection.
+        Assumes data is a numpy array of shape (num_patients, num_timestamps, num_features).
+        Converts data to a tensor for PyTorch processing.
         """
-        self.data = torch.tensor(data, dtype=torch.float32)  # Convert data to float tensors
-        self.temporal_data = torch.tensor(temporal_data, dtype=torch.long)  # Convert temporal data to long tensors
+        self.data = torch.tensor(data, dtype=torch.float32)
 
     def __getitem__(self, index):
-        return self.data[index], self.temporal_data[index]
+        return self.data[
+            index
+        ]  # Returns a tensor of shape (num_timestamps, num_features)
 
     def __len__(self):
         return len(self.data)
-
-
-    def collate_fn(self, batch):
-        """Minibatch sampling
-        """
-        # Pad sequences to max length
-        X_mb = [X for X in batch[0]]
-        
-        # The actual length of each data
-        T_mb = [T for T in batch[1]]
-        
-        return X_mb, T_mb

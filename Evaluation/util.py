@@ -28,7 +28,6 @@ def load_data(
     DF.drop(["Date", "Time", "Duration"], axis=1, inplace=True)
     DF.sort_index(inplace=True)
     #
-
     # print("Number of unique Names:", DF["Name"].nunique())
     # print("Number of columns:", len(DF.columns))
     # print("Number of rows:", len(DF))

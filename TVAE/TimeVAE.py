@@ -1,144 +1,324 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
+import wandb
+
 
 class Sampling(nn.Module):
+    def __init__(self):
+        super(Sampling, self).__init__()
+
     def forward(self, z_mean, z_log_var):
         std = torch.exp(0.5 * z_log_var)
         eps = torch.randn_like(std)
         return z_mean + eps * std
-class BaseVariationalAutoencoder(nn.Module):
-    def __init__(self, params):
-        super().__init__()
-        self.seq_len = params['seq_len']
-        self.feat_dim = params['feat_dim']
-        self.latent_dim = params['latent_dim']
-        self.reconstruction_wt = params['reconstruction_wt']
-        self.encoder = Encoder(params) 
-        self.decoder = Decoder(params) 
-
-    def forward(self, x):
-        z_mean, z_log_var, z = self.encoder(x)
-        if self.decoder:
-            reconstruction = self.decoder(z)
-            return reconstruction, z_mean, z_log_var
-        return z_mean, z_log_var
-
-    def loss_function(self, x, reconstruction, z_mean, z_log_var):
-        recon_loss = F.mse_loss(reconstruction, x, reduction='sum')
-        kl_loss = -0.5 * torch.sum(1 + z_log_var - z_mean.pow(2) - z_log_var.exp())
-        return self.reconstruction_wt * recon_loss + kl_loss
-
 class Encoder(nn.Module):
     def __init__(self, params):
         super().__init__()
-        self.seq_len = params['seq_len']
-        self.feat_dim = params['feat_dim']
-        self.latent_dim = params['latent_dim']
+        self.seq_len = params["seq_len"]
+        self.feat_dim = params["feat_dim"]
+        self.latent_dim = params["latent_dim"]
 
         # Define convolutional layers
         modules = []
-        in_channels = self.feat_dim
-        for h_dim in params['hidden_layer_sizes']:
-            modules.append(nn.Conv1d(in_channels, h_dim, kernel_size=3, stride=2, padding=1))
+        in_channels = params["feat_dim"]
+        for h_dim in params["hidden_layer_sizes"]:
+            modules.append(
+                nn.Conv1d(in_channels, h_dim, kernel_size=3, stride=2, padding=1)
+            )
             modules.append(nn.ReLU())
             in_channels = h_dim
 
         self.conv_layers = nn.Sequential(*modules)
         self.flatten = nn.Flatten()
-        self.fc_z_mean = nn.Linear(params['hidden_layer_sizes'][-1] * (self.seq_len // 2 ** len(params['hidden_layer_sizes'])), self.latent_dim)
-        self.fc_z_log_var = nn.Linear(params['hidden_layer_sizes'][-1] * (self.seq_len // 2 ** len(params['hidden_layer_sizes'])), self.latent_dim)
+        self.fc_z_mean = nn.Linear(
+            params["hidden_layer_sizes"][-1]
+            * (self.seq_len // 2 ** len(params["hidden_layer_sizes"])),
+            self.latent_dim,
+        )
+        self.fc_z_log_var = nn.Linear(
+            params["hidden_layer_sizes"][-1]
+            * (self.seq_len // 2 ** len(params["hidden_layer_sizes"])),
+            self.latent_dim,
+        )
         self.sampling = Sampling()
 
     def forward(self, x):
-        x = x.permute(0, 2, 1)  # Change from (batch, seq_len, feat_dim) to (batch, feat_dim, seq_len)
+        x = x.permute(
+            0, 2, 1
+        )  # Change from (batch, seq_len, feat_dim) to (batch, feat_dim, seq_len)
         x = self.conv_layers(x)
         x = self.flatten(x)
         z_mean = self.fc_z_mean(x)
         z_log_var = self.fc_z_log_var(x)
         z = self.sampling(z_mean, z_log_var)
         return z_mean, z_log_var, z
-class TrendModel(nn.Module):
-    def __init__(self, params):
-        super().__init__()
-        self.seq_len = params['seq_len']
-        self.feat_dim = params['feat_dim']
-        self.trend_poly = params['trend_poly']
 
-        # Polynomial coefficients
-        self.coefficients = nn.Parameter(torch.randn(self.feat_dim, self.trend_poly))
+class TrendLayer(nn.Module):
+    def __init__(self, feat_dim, trend_poly, seq_len):
+        super(TrendLayer, self).__init__()
+        self.feat_dim = feat_dim
+        self.trend_poly = trend_poly
+        self.seq_len = seq_len
+        self.trend_dense1 = nn.Linear(feat_dim, feat_dim * trend_poly)
+        self.trend_dense2 = nn.Linear(feat_dim * trend_poly, feat_dim * trend_poly)
+
+    def forward(self, z):
+        # Process the input through two dense layers
+        print("Shape of z before trend layer:", z.shape)
+        trend_params = F.relu(self.trend_dense1(z))
+        print("Shape of trend_params after first dense layer:", trend_params.shape)
+        trend_params = self.trend_dense2(trend_params)
+        print("Shape of trend_params after second dense layer:", trend_params.shape)
+        trend_params = trend_params.view(-1, self.feat_dim, self.trend_poly)
+        print("Shape of trend_params after reshaping:", trend_params.shape)
+        # Create the polynomial terms for the trend
+        lin_space = torch.linspace(0, 1, self.seq_len, device=z.device)
+        poly_space = torch.stack(
+            [lin_space ** (p + 1) for p in range(self.trend_poly)], dim=0
+        )
+
+        # Calculate the trend values
+        trend_vals = torch.matmul(trend_params, poly_space)
+        trend_vals = trend_vals.permute(0, 2, 1)
+
+        return trend_vals
+
+
+class SeasonalLayer(nn.Module):
+    def __init__(self, feat_dim, seq_len, custom_seas):
+        super(SeasonalLayer, self).__init__()
+        self.feat_dim = feat_dim
+        self.seq_len = seq_len
+        self.custom_seas = custom_seas
+        self.dense_layers = nn.ModuleList(
+            [
+                nn.Linear(feat_dim, feat_dim * num_seasons)
+                for num_seasons, _ in custom_seas
+            ]
+        )
+        self.reshape_layers = [
+            (feat_dim, num_seasons) for num_seasons, _ in custom_seas
+        ]
+
+    def _get_season_indexes_over_seq(self, num_seasons, len_per_season):
+        season_indexes = torch.arange(num_seasons).repeat(len_per_season)
+        season_indexes = season_indexes.unsqueeze(0).repeat(
+            self.seq_len // len_per_season + 1, 1
+        )
+        season_indexes = season_indexes.flatten()[: self.seq_len]
+        return season_indexes
+
+    def forward(self, z):
+        all_seas_vals = []
+
+        for i, (num_seasons, len_per_season) in enumerate(self.custom_seas):
+            season_params = self.dense_layers[i](z)
+            season_params = season_params.view(-1, self.feat_dim, num_seasons)
+
+            season_indexes = self._get_season_indexes_over_seq(
+                num_seasons, len_per_season
+            )
+            season_vals = F.embedding(season_indexes, season_params.permute(0, 2, 1))
+            all_seas_vals.append(season_vals)
+
+        all_seas_vals = torch.stack(all_seas_vals, dim=-1)
+        all_seas_vals = torch.sum(all_seas_vals, dim=-1)
+        return all_seas_vals
+
+
+class LevelModel(nn.Module):
+    def __init__(self, feat_dim, seq_len):
+        super(LevelModel, self).__init__()
+        self.feat_dim = feat_dim
+        self.seq_len = seq_len
+        self.level_dense1 = nn.Linear(feat_dim, feat_dim)
+        self.level_dense2 = nn.Linear(feat_dim, feat_dim)
+
+    def forward(self, z):
+        # Process input through two dense layers
+        level_params = F.relu(self.level_dense1(z))
+        level_params = self.level_dense2(level_params)
+
+        # Reshape to (N, 1, D)
+        level_params = level_params.view(-1, 1, self.feat_dim)
+
+        # Create a tensor of ones with shape (1, seq_len, 1) and broadcast it
+        ones_tensor = torch.ones(
+            (1, self.seq_len, 1), device=z.device, dtype=torch.float32
+        )
+
+        # Multiply level_params by ones_tensor to broadcast the level values across the sequence length
+        level_vals = level_params * ones_tensor
+
+        return level_vals
+
+
+class DecoderResidual(nn.Module):
+    def __init__(self, input_dim, hidden_layer_sizes, seq_len, feat_dim):
+        super(DecoderResidual, self).__init__()
+        self.input_dim = input_dim
+        self.hidden_layer_sizes = hidden_layer_sizes
+        self.seq_len = seq_len
+        self.feat_dim = feat_dim
+
+        # Dense layer to reshape input to suitable dimension
+        self.dense = nn.Linear(input_dim, hidden_layer_sizes[-1] * seq_len)
+
+        # Convolutional transpose layers
+        self.conv_transpose_layers = nn.ModuleList()
+        # Initialize convolutional transpose layers for upsampling
+        for i, num_filters in enumerate(reversed(hidden_layer_sizes[:-1])):
+            self.conv_transpose_layers.append(
+                nn.ConvTranspose1d(
+                    in_channels=hidden_layer_sizes[-i - 1],
+                    out_channels=num_filters,
+                    kernel_size=3,
+                    stride=2,
+                    padding=1,
+                    output_padding=1,
+                )
+            )
+
+        # Last convolutional transpose to match feature dimensions
+        self.final_conv_transpose = nn.ConvTranspose1d(
+            in_channels=hidden_layer_sizes[0],
+            out_channels=feat_dim,
+            kernel_size=3,
+            stride=2,
+            padding=1,
+            output_padding=1,
+        )
 
     def forward(self, x):
-        # Generate polynomial terms
-        t = torch.linspace(0, 1, steps=self.seq_len, device=x.device)
-        T = torch.stack([t**i for i in range(1, self.trend_poly + 1)], dim=1)
-        
-        # Compute polynomial trend for each feature
-        trend = torch.einsum('bdi,ip->bpd', self.coefficients.expand(x.size(0), -1, -1), T)
-        return trend.permute(0, 2, 1)
+        x = F.relu(self.dense(x))
+        x = x.view(-1, self.hidden_layer_sizes[-1], self.seq_len)
 
-class SeasonalModel(nn.Module):
-    def __init__(self, params):
-        super().__init__()
-        self.seq_len = params['seq_len']
-        self.num_seasons = params['num_seasons']
-        self.amplitudes = nn.Parameter(torch.randn(params['feat_dim'], params['num_seasons']))
-        self.frequencies = nn.Parameter(torch.randn(params['feat_dim'], params['num_seasons']))
-        self.phases = nn.Parameter(torch.randn(params['feat_dim'], params['num_seasons']))
+        for conv_layer in self.conv_transpose_layers:
+            x = F.relu(conv_layer(x))
 
-    def forward(self, x):
-        t = torch.linspace(0, 1, steps=self.seq_len, device=x.device)
-        freqs = torch.exp(self.frequencies)  # Ensure positive frequencies
-        phases = self.phases
-        sines = torch.sin(2 * np.pi * freqs.unsqueeze(-1) * t + phases.unsqueeze(-1))
-        seasonal = torch.einsum('bdi,dj->bdj', self.amplitudes.expand(x.size(0), -1, -1), sines)
-        return seasonal.permute(0, 2, 1)
+        x = F.relu(self.final_conv_transpose(x))
+        x = x.view(-1, self.seq_len, self.feat_dim)
+        return x
+
 
 class Decoder(nn.Module):
     def __init__(self, params):
-        super().__init__()
-        self.seq_len = params['seq_len']
-        self.feat_dim = params['feat_dim']
-        self.latent_dim = params['latent_dim']
-        self.hidden_sizes = params['hidden_sizes']
-        self.trend_poly = params['trend_poly']
-        self.num_seasons = params['num_seasons']
+        super(Decoder, self).__init__()
+        self.latent_dim = params["latent_dim"]
+        self.feat_dim = params["feat_dim"]
+        self.seq_len = params["seq_len"]
+        self.trend_poly = params["trend_poly"]
+        self.custom_seas = params["custom_seas"]
 
-        # Define layers
-        self.fc1 = nn.Linear(self.latent_dim, self.hidden_sizes[-1])
-        self.trend_model = TrendModel(self.seq_len, self.feat_dim, self.trend_poly)
-        self.seasonal_model = SeasonalModel(self.seq_len, self.feat_dim, self.num_seasons)
-        
-        # Layers for the final output generation
-        self.conv_transpose_layers = nn.ModuleList()
-        current_channels = self.hidden_sizes[-1]
-        for h_dim in reversed(self.hidden_sizes[:-1]):
-            self.conv_transpose_layers.append(
-                nn.ConvTranspose1d(current_channels, h_dim, kernel_size=3, stride=2, padding=1, output_padding=1)
+        # Initialize components
+        if self.trend_poly > 0:
+            self.trend_layer = TrendLayer(self.feat_dim, self.trend_poly, self.seq_len)
+        if len(self.custom_seas) > 0:
+            self.seasonal_layer = SeasonalLayer(
+                self.feat_dim, self.seq_len, self.custom_seas
             )
-            self.conv_transpose_layers.append(nn.ReLU())
-            current_channels = h_dim
 
-        self.final_layer = nn.ConvTranspose1d(current_channels, self.feat_dim, kernel_size=3, stride=2, padding=1, output_padding=1)
+        # Residual connection
+        self.residual_dense = nn.Linear(self.latent_dim, self.seq_len * self.feat_dim)
+        self.use_residual_conn = True
+
+    def forward(self, z):
+        outputs = torch.zeros((z.size(0), self.seq_len, self.feat_dim), device=z.device)
+        if self.trend_poly > 0:
+            trend_vals = self.trend_layer(z)
+            outputs = trend_vals if outputs is None else outputs + trend_vals
+
+        if len(self.custom_seas) > 0:
+            seasonal_vals = self.seasonal_layer(z)
+            outputs = seasonal_vals if outputs is None else outputs + seasonal_vals
+
+        if self.use_residual_conn:
+            residuals = self.residual_dense(z)
+            residuals = residuals.view(-1, self.seq_len, self.feat_dim)
+            outputs = residuals if outputs is None else outputs + residuals
+
+        if outputs is None:
+            raise ValueError(
+                "No decoder model to use. You must use one or more components."
+            )
+
+        return outputs
+
+
+class TimeVAE(nn.Module):
+    def __init__(
+        self,
+        params,
+    ):
+        super(TimeVAE, self).__init__()
+        self.seq_len = params["seq_len"]
+        self.feat_dim = params["feat_dim"]
+        self.latent_dim = params["latent_dim"]
+        self.reconstruction_wt = params["reconstruction_wt"]
+        self.batch_size = params["batch_size"]
+        self.hidden_layer_sizes = params["hidden_layer_sizes"]
+        self.trend_poly = params["trend_poly"]
+        self.custom_seas = params["custom_seas"]
+        self.device = params["device"]
+        # Define Encoder and Decoder
+        self.encoder = Encoder(params)
+        self.decoder = Decoder(params)
 
     def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = x.unsqueeze(-1)  # Add a fake sequence dimension
+        z_mean, z_log_var, _ = self.encoder(x)
+        z = self._reparameterize(z_mean, z_log_var)
+        reconstructed_x = self.decoder(z)
+        return reconstructed_x, z_mean, z_log_var
 
-        # Apply convolution transpose layers
-        for layer in self.conv_transpose_layers:
-            x = layer(x)
+    def _reparameterize(self, mean, log_var):
+        std = torch.exp(0.5 * log_var)
+        eps = torch.randn_like(std)
+        return mean + eps * std
 
-        x = self.final_layer(x).squeeze(-1)
+    def loss_function(self, recon_x, x, mean, log_var):
+        # Reconstruction loss
+        recon_loss = F.mse_loss(recon_x, x, reduction="sum")
 
-        # Add trend and seasonal components
-        trend = self.trend_model(x)
-        seasonal = self.seasonal_model(x)
-        x = x + trend + seasonal
+        # KL divergence loss
+        kl_loss = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
 
-        return x
-    def save_model(self, path):
-        torch.save(self.state_dict(), './model.pth')
-        # savve dictionary to txt file
-        with open(path + '.txt', 'w') as file:
-            file.write(str(self.__dict__))
+        # Total loss
+        return self.reconstruction_wt * recon_loss + kl_loss
+
+    def train_step(self, data, optimizer):
+        self.train()
+        optimizer.zero_grad()
+        recon_batch, mu, logvar = self(data)
+        loss = self.loss_function(recon_batch, data, mu, logvar)
+        loss.backward()
+        optimizer.step()
+        return loss.item()
+
+    def test_step(self, data):
+        self.eval()
+        with torch.no_grad():
+            recon_batch, mu, logvar = self(data)
+            test_loss = self.loss_function(recon_batch, data, mu, logvar).item()
+        return test_loss
+
+    def fit(self, train_loader, test_loader, epochs=20, lr=1e-3):
+        optimizer = optim.Adam(self.parameters(), lr=lr)
+        for epoch in range(epochs):
+            train_loss = 0.0
+            for batch in train_loader:
+                loss = self.train_step(batch, optimizer)
+                train_loss += loss.item()
+            train_loss /= len(train_loader)
+
+            test_loss = 0.0
+            for batch in test_loader:
+                loss = self.test_step(batch)
+                test_loss += loss.item()
+            test_loss /= len(test_loader)
+
+            print(
+                f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}"
+            )
+        # wandb.log({"train_loss": train_loss, "test_loss": test_loss})
