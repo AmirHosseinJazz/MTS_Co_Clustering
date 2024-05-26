@@ -1,0 +1,35 @@
+2024-05-26 10:31:53,168 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Current SDK version is 0.17.0
+2024-05-26 10:31:53,169 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Configure stats pid to 3359
+2024-05-26 10:31:53,169 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Loading settings from /root/.config/wandb/settings
+2024-05-26 10:31:53,170 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Loading settings from /content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/wandb/settings
+2024-05-26 10:31:53,170 WARNING MainThread:3359 [wandb_setup.py:_flush():76] Unknown environment variable: WANDB_SERVICE
+2024-05-26 10:31:53,170 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-05-26 10:31:53,170 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-05-26 10:31:53,170 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'TGAN/main.py', 'program_abspath': '/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/main.py', 'program': '/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/main.py'}
+2024-05-26 10:31:53,170 INFO    MainThread:3359 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-05-26 10:31:53,171 INFO    MainThread:3359 [wandb_init.py:_log_setup():520] Logging user logs to /content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/wandb/run-20240526_103153-0dcpbkiz/logs/debug.log
+2024-05-26 10:31:53,171 INFO    MainThread:3359 [wandb_init.py:_log_setup():521] Logging internal logs to /content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TGAN/wandb/run-20240526_103153-0dcpbkiz/logs/debug-internal.log
+2024-05-26 10:31:53,171 INFO    MainThread:3359 [wandb_init.py:init():560] calling init triggers
+2024-05-26 10:31:53,171 INFO    MainThread:3359 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {'Z_dim': 50, 'hidden_dim': 64, 'batch_size': 15, 'dis_thresh': 0.15, 'num_layers': 5, 'embedder_epoch': 500, 'supervisor_epochs': 500, 'padding_value': 0, 'module': 'GRU', 'device': 'cuda', 'data_source': '29var', 'break_data': True, 'break_size': 30, 'leave_out_problematic_features': True, 'cutoff_data': True, 'input_dim': 7, 'max_seq_len': 30, 'num_samples': 1129}
+2024-05-26 10:31:53,171 INFO    MainThread:3359 [wandb_init.py:init():610] starting backend
+2024-05-26 10:31:53,171 INFO    MainThread:3359 [wandb_init.py:init():614] setting up manager
+2024-05-26 10:31:53,176 INFO    MainThread:3359 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-05-26 10:31:53,177 INFO    MainThread:3359 [wandb_init.py:init():622] backend started and connected
+2024-05-26 10:31:53,186 INFO    MainThread:3359 [wandb_init.py:init():711] updated telemetry
+2024-05-26 10:31:53,242 INFO    MainThread:3359 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-05-26 10:31:53,491 INFO    MainThread:3359 [wandb_run.py:_on_init():2396] communicating current version
+2024-05-26 10:31:53,614 INFO    MainThread:3359 [wandb_run.py:_on_init():2405] got version response 
+2024-05-26 10:31:53,614 INFO    MainThread:3359 [wandb_init.py:init():795] starting run threads in backend
+2024-05-26 10:31:54,069 INFO    MainThread:3359 [wandb_run.py:_console_start():2374] atexit reg
+2024-05-26 10:31:54,070 INFO    MainThread:3359 [wandb_run.py:_redirect():2229] redirect: wrap_raw
+2024-05-26 10:31:54,070 INFO    MainThread:3359 [wandb_run.py:_redirect():2294] Wrapping output streams.
+2024-05-26 10:31:54,070 INFO    MainThread:3359 [wandb_run.py:_redirect():2319] Redirects installed.
+2024-05-26 10:31:54,073 INFO    MainThread:3359 [wandb_init.py:init():838] run started, returning control to user process
+2024-05-26 11:05:47,913 INFO    MainThread:3359 [wandb_run.py:_finish():2103] finishing run amirhossein-jazayeri/timegan/0dcpbkiz
+2024-05-26 11:05:47,913 INFO    MainThread:3359 [wandb_run.py:_atexit_cleanup():2343] got exitcode: 0
+2024-05-26 11:05:47,914 INFO    MainThread:3359 [wandb_run.py:_restore():2326] restore
+2024-05-26 11:05:47,914 INFO    MainThread:3359 [wandb_run.py:_restore():2332] restore done
+2024-05-26 11:05:53,136 INFO    MainThread:3359 [wandb_run.py:_footer_history_summary_info():3994] rendering history
+2024-05-26 11:05:53,137 INFO    MainThread:3359 [wandb_run.py:_footer_history_summary_info():4026] rendering summary
+2024-05-26 11:05:53,145 INFO    MainThread:3359 [wandb_run.py:_footer_sync_info():3953] logging synced files
