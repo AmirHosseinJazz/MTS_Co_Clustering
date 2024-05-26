@@ -1,4 +1,19 @@
 # Title : Thesis project on co-clustering of multivariate time series
 
 -- Model : TimeGAN - 6
-: testing how it works with less features and same samples
+    : testing how it works with less features and same samples - it seems it works good with less features (namely 8)
+    
+
+
+-- Model : TimeGAN - 7
+    : higher number of epochs- learning rate set to 0.005 - 120 timesteps
+
+-- Model : TG-8
+    :same as 7 with 60 timestep data
+
+
+-- Model :TG- 9
+    :new train params- only 8 feature - breaking data
+
+
+

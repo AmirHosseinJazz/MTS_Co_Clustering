@@ -69,4 +69,4 @@ def load_data(
     samples = np.array(samples)
 
     print("Shape of _samples:", samples.shape)
-    return samples, DF.columns.tolist()
+    return samples, DF.drop(columns='Name').columns.tolist()

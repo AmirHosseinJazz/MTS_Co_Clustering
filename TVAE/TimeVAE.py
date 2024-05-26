@@ -13,6 +13,8 @@ class Sampling(nn.Module):
         std = torch.exp(0.5 * z_log_var)
         eps = torch.randn_like(std)
         return z_mean + eps * std
+
+
 class Encoder(nn.Module):
     def __init__(self, params):
         super().__init__()
@@ -55,14 +57,21 @@ class Encoder(nn.Module):
         z = self.sampling(z_mean, z_log_var)
         return z_mean, z_log_var, z
 
+
 class TrendLayer(nn.Module):
-    def __init__(self, feat_dim, trend_poly, seq_len):
+    def __init__(self, params):
         super(TrendLayer, self).__init__()
-        self.feat_dim = feat_dim
-        self.trend_poly = trend_poly
-        self.seq_len = seq_len
-        self.trend_dense1 = nn.Linear(feat_dim, feat_dim * trend_poly)
-        self.trend_dense2 = nn.Linear(feat_dim * trend_poly, feat_dim * trend_poly)
+        self.latent_dim = params["latent_dim"]
+        self.feat_dim = params["feat_dim"]
+        self.trend_poly = params["trend_poly"]
+        self.seq_len = params["seq_len"]
+        self.trend_dense1 = nn.Linear(
+            params["latent_dim"], params["feat_dim"] * params["trend_poly"]
+        )
+        self.trend_dense2 = nn.Linear(
+            params["feat_dim"] * params["trend_poly"],
+            params["feat_dim"] * params["trend_poly"],
+        )
 
     def forward(self, z):
         # Process the input through two dense layers
@@ -87,19 +96,20 @@ class TrendLayer(nn.Module):
 
 
 class SeasonalLayer(nn.Module):
-    def __init__(self, feat_dim, seq_len, custom_seas):
+    def __init__(self, params):
         super(SeasonalLayer, self).__init__()
-        self.feat_dim = feat_dim
-        self.seq_len = seq_len
-        self.custom_seas = custom_seas
+        self.feat_dim = params["feat_dim"]
+        self.seq_len = params["seq_len"]
+        self.latent_dim = params["latent_dim"]
+        self.custom_seas = params["custom_seas"]
         self.dense_layers = nn.ModuleList(
             [
-                nn.Linear(feat_dim, feat_dim * num_seasons)
-                for num_seasons, _ in custom_seas
+                nn.Linear(self.latent_dim, self.feat_dim * num_seasons)
+                for num_seasons, _ in self.custom_seas
             ]
         )
         self.reshape_layers = [
-            (feat_dim, num_seasons) for num_seasons, _ in custom_seas
+            (self.feat_dim, num_seasons) for num_seasons, _ in self.custom_seas
         ]
 
     def _get_season_indexes_over_seq(self, num_seasons, len_per_season):
@@ -129,12 +139,13 @@ class SeasonalLayer(nn.Module):
 
 
 class LevelModel(nn.Module):
-    def __init__(self, feat_dim, seq_len):
+    def __init__(self, params):
         super(LevelModel, self).__init__()
-        self.feat_dim = feat_dim
-        self.seq_len = seq_len
-        self.level_dense1 = nn.Linear(feat_dim, feat_dim)
-        self.level_dense2 = nn.Linear(feat_dim, feat_dim)
+        self.feat_dim = params["feat_dim"]
+        self.seq_len = params["seq_len"]
+        self.latent_dim = params["latent_dim"]
+        self.level_dense1 = nn.Linear(self.latent_dim, self.feat_dim)
+        self.level_dense2 = nn.Linear(self.feat_dim, self.feat_dim)
 
     def forward(self, z):
         # Process input through two dense layers
@@ -214,22 +225,21 @@ class Decoder(nn.Module):
 
         # Initialize components
         if self.trend_poly > 0:
-            self.trend_layer = TrendLayer(self.feat_dim, self.trend_poly, self.seq_len)
+            self.trend_layer = TrendLayer(params)
         if len(self.custom_seas) > 0:
-            self.seasonal_layer = SeasonalLayer(
-                self.feat_dim, self.seq_len, self.custom_seas
-            )
-
+            self.seasonal_layer = SeasonalLayer(params)
+        self.level_layer = LevelModel(params)
         # Residual connection
         self.residual_dense = nn.Linear(self.latent_dim, self.seq_len * self.feat_dim)
         self.use_residual_conn = True
 
     def forward(self, z):
-        outputs = torch.zeros((z.size(0), self.seq_len, self.feat_dim), device=z.device)
+        outputs = self.level_layer(z)
+        print("Shape of outputs after level layer:", outputs.shape)
         if self.trend_poly > 0:
             trend_vals = self.trend_layer(z)
             outputs = trend_vals if outputs is None else outputs + trend_vals
-
+        print("Shape of outputs after trend layer:", outputs.shape)
         if len(self.custom_seas) > 0:
             seasonal_vals = self.seasonal_layer(z)
             outputs = seasonal_vals if outputs is None else outputs + seasonal_vals
@@ -239,10 +249,6 @@ class Decoder(nn.Module):
             residuals = residuals.view(-1, self.seq_len, self.feat_dim)
             outputs = residuals if outputs is None else outputs + residuals
 
-        if outputs is None:
-            raise ValueError(
-                "No decoder model to use. You must use one or more components."
-            )
 
         return outputs
 
