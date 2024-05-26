@@ -240,9 +240,9 @@ class Decoder(nn.Module):
             trend_vals = self.trend_layer(z)
             outputs = trend_vals if outputs is None else outputs + trend_vals
         print("Shape of outputs after trend layer:", outputs.shape)
-        if len(self.custom_seas) > 0:
-            seasonal_vals = self.seasonal_layer(z)
-            outputs = seasonal_vals if outputs is None else outputs + seasonal_vals
+        # if len(self.custom_seas) > 0:
+        #     seasonal_vals = self.seasonal_layer(z)
+        #     outputs = seasonal_vals if outputs is None else outputs + seasonal_vals
 
         if self.use_residual_conn:
             residuals = self.residual_dense(z)
