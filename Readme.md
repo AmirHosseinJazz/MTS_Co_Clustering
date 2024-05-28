@@ -21,3 +21,11 @@
     : seeing improvements in latest model -> test on break size -> 30
     : still on 8 feature
     : lr back to 0.001 
+
+
+--model :TV-2
+    :cuda 
+    :epoch 500
+
+--model :TV-3
+    :break

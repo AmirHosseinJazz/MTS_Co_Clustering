@@ -46,8 +46,7 @@ def encode(data, model_name, params):
     model.load_state_dict(torch.load(f"saved_models/{model_name}/model.pth"))
     model.eval()
 
-    Y_temporal = [len(x) for x in data]
-    dataset = TimeVAEdataset(data, Y_temporal)
+    dataset = TimeVAEdataset(data)
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=params["batch_size"], shuffle=False
     )
@@ -55,14 +54,11 @@ def encode(data, model_name, params):
     encoded_data = []
 
     ### Change this to use the model
-    # with torch.no_grad():
-    #     for X_mb,T_mb in dataloader:
-    #         X_mb=torch.tensor(X_mb,dtype=torch.float32,device=params['device'])
-    #         T_mb=torch.tensor(T_mb,dtype=torch.float32,device=params['device'])
-    #         Z_mb=torch.randn((params['batch_size'],params['max_seq_len'],params['Z_dim'])).to(params['device'])
-    #         encoded_data.append(model(X=X_mb,T=T_mb,Z=Z_mb,obj="encoder"))
-    # encoded_data=torch.cat(encoded_data,dim=0)
-
+    with torch.no_grad():
+        for X_mb in dataloader:
+            encoded_data.append(model.encoder(X_mb))
+    encoded_data = torch.cat(encoded_data, dim=0)
+    print(encoded_data.shape)
     if not os.path.exists(f"../Generated/{model_name}/"):
         os.makedirs(f"../Generated/{model_name}/")
     np.save(f"../Generated/{model_name}/encoded_data.npy", encoded_data.numpy())
@@ -120,10 +116,22 @@ def main():
     if args.objective == "generate":
         generate_samples(args.model_name, params)
     elif args.objective == "encode":
-        if args.data_source == "29var":
-            data = load_data("../Data/PreProcessed/29var/df29.xlsx")
-        elif args.data_source == "12var":
-            data = load_data("../Data/PreProcessed/12var/df12.xlsx")
+        if params["data_source"] == "29var":
+            data = load_data(
+                "../Data/PreProcessed/29var/df29.xlsx",
+                break_to_smaller=params["break_data"],
+                break_size=params["break_size"],
+                leave_out_problematic_features=params["leave_out_problematic_features"],
+                cutoff_data=params["cutoff_data"],
+            )
+        elif params["data_source"] == "12var":
+            data = load_data(
+                "../Data/PreProcessed/12var/df12.xlsx",
+                break_to_smaller=params["break_data"],
+                break_size=params["break_size"],
+                leave_out_problematic_features=params["leave_out_problematic_features"],
+                cutoff_data=params["cutoff_data"],
+            )
         else:
             raise ValueError("Unsupported data source. Use 12var or 29var")
         encode(data, args.model_name, params)
