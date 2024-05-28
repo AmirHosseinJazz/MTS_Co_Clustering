@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py", line 141, in <module>
+    main(params)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py", line 58, in main
+    model.fit(
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/TimeVAE.py", line 327, in fit
+    loss = self.train_step(batch, optimizer)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/TimeVAE.py", line 309, in train_step
+    recon_batch, mu, logvar = self(data)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/TimeVAE.py", line 284, in forward
+    z_mean, z_log_var, _ = self.encoder(x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/TimeVAE.py", line 56, in forward
+    z_mean = self.fc_z_mean(x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/linear.py", line 116, in forward
+    return F.linear(input, self.weight, self.bias)
