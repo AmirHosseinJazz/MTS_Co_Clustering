@@ -51,7 +51,7 @@ def main(params):
     test_loader = torch.utils.data.DataLoader(
         dataset, batch_size=params["batch_size"], shuffle=True
     )
-    # wandb.init(project="timevae", config=params)
+    wandb.init(project="timevae", config=params)
     ### Model and optimizers initialization and training
 
     model = TimeVAE(params).to(params["device"])
@@ -77,7 +77,7 @@ def main(params):
         for key in params.keys():
             f.write(f"{key} : {params[key]}\n")
     # Finalize wandb
-    # wandb.finish()
+    wandb.finish()
 
 
 if __name__ == "__main__":
@@ -92,13 +92,13 @@ if __name__ == "__main__":
         "--batch_size", type=int, default=20, help="Batch size for training"
     )
     parser.add_argument(
-        "--device", type=str, default="cpu", help="Device to use for training"
+        "--device", type=str, default="cuda", help="Device to use for training"
     )
     parser.add_argument(
-        "--epochs", type=int, default=100, help="Number of epochs to train"
+        "--epochs", type=int, default=500, help="Number of epochs to train"
     )
     parser.add_argument(
-        "--latent_dim", type=int, default=64, help="Hidden dimension for the model"
+        "--latent_dim", type=int, default=80, help="Hidden dimension for the model"
     )
     parser.add_argument(
         "--lr", type=float, default=1e-3, help="Learning rate for training"

@@ -15,12 +15,12 @@ def generate_samples(model_name, params):
     """
     Generate samples from the trained TimeVAE model.
     """
-    model = TimeVAE(params)
+    model = TimeVAE(params).to(params["device"])
     model.load_state_dict(torch.load(f"./saved_models/{model_name}/model.pth"))
     model.eval()
     generated_samples = []
     for _ in range(180):
-        z = torch.randn(params["latent_dim"])
+        z = torch.randn(params["latent_dim"]).to(params["device"])
         with torch.no_grad():
             samples = model.decoder(z)
         samples = samples.cpu()

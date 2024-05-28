@@ -47,7 +47,7 @@ class Encoder(nn.Module):
         self.sampling = Sampling()
 
     def forward(self, x):
-        x = x.to_device(self.device)
+        # x = x.to_device(self.device)
         x = x.permute(
             0, 2, 1
         )  # Change from (batch, seq_len, feat_dim) to (batch, feat_dim, seq_len)
@@ -293,11 +293,13 @@ class TimeVAE(nn.Module):
 
     def loss_function(self, recon_x, x, mean, log_var):
         # Reconstruction loss
+        recon_loss=recon_x.to(self.device)
+        x=x.to(self.device)
         recon_loss = F.mse_loss(recon_x, x, reduction="sum")
-
+        recon_loss.to(self.device)
         # KL divergence loss
         kl_loss = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
-
+        kl_loss.to(self.device)
         # Total loss
         return self.reconstruction_wt * recon_loss + kl_loss
 
@@ -335,4 +337,4 @@ class TimeVAE(nn.Module):
             print(
                 f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}"
             )
-        # wandb.log({"train_loss": train_loss, "test_loss": test_loss})
+        wandb.log({"train_loss": train_loss, "test_loss": test_loss})
