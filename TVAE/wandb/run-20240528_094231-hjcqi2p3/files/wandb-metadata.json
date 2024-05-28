@@ -1,0 +1,131 @@
+{
+    "os": "Linux-6.1.85+-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "heartbeatAt": "2024-05-28T09:42:32.307451",
+    "startedAt": "2024-05-28T09:42:31.781007",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--break_size",
+        "30"
+    ],
+    "state": "running",
+    "program": "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py",
+    "codePathLocal": "main.py",
+    "codePath": "TVAE/main.py",
+    "git": {
+        "remote": "https://AmirHosseinJazz:@github.com/AmirHosseinJazz/MTS_Co_Clustering.git",
+        "commit": "30ebe853a7843ca1027f4b91620df44775fda82c"
+    },
+    "email": "amirhossein.jazayeri@gmail.com",
+    "root": "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering",
+    "host": "d75405e501c4",
+    "username": "root",
+    "executable": "/usr/bin/python3",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 2200.2000000000003,
+        "min": 0.0,
+        "max": 0.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.2,
+            "min": 0.0,
+            "max": 0.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 201.22513961791992,
+            "used": 27.30234146118164
+        }
+    },
+    "gpu": "NVIDIA L4",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA L4",
+            "memory_total": 24152899584
+        }
+    ],
+    "memory": {
+        "total": 62.804237365722656
+    }
+}

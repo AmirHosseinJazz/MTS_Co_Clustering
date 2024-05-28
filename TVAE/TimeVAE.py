@@ -337,4 +337,4 @@ class TimeVAE(nn.Module):
             print(
                 f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}"
             )
-        wandb.log({"train_loss": train_loss, "test_loss": test_loss})
+            wandb.log({"train_loss": train_loss, "test_loss": test_loss})
