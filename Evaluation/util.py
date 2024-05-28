@@ -10,6 +10,7 @@ def load_data(
     break_size=60,
     leave_out_problematic_features=True,
     cutoff_data=True,
+    feature_shape=30,
 ):
     DF = pd.read_excel(file_path)
     DF["datetime"] = DF["Date"] + " " + DF["Time"]
@@ -27,12 +28,20 @@ def load_data(
         )
     DF.drop(["Date", "Time", "Duration"], axis=1, inplace=True)
     DF.sort_index(inplace=True)
-    DF = DF.iloc[:, :8]
+
+    ## Experimental
+    if feature_shape < 10:
+        print('Using only 8 features *******************************************')
+        DF = DF.iloc[:, :8]
+
     # print("Number of unique Names:", DF["Name"].nunique())
     # print("Number of columns:", len(DF.columns))
     # print("Number of rows:", len(DF))
     # print("Name of columns:", DF.columns)
-
+    # if break_to_smaller:
+    #     print("Breaking data to smaller sequences")
+    # else:
+    #     print("Not breaking data to smaller sequences")
     samples = []
     if break_to_smaller:
         for k in DF.Name.unique().tolist():
@@ -69,4 +78,4 @@ def load_data(
     samples = np.array(samples)
 
     print("Shape of _samples:", samples.shape)
-    return samples, DF.drop(columns='Name').columns.tolist()
+    return samples, DF.drop(columns="Name").columns.tolist()

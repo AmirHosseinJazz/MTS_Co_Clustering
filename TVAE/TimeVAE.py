@@ -21,7 +21,7 @@ class Encoder(nn.Module):
         self.seq_len = params["seq_len"]
         self.feat_dim = params["feat_dim"]
         self.latent_dim = params["latent_dim"]
-
+        self.device = params["device"]
         # Define convolutional layers
         modules = []
         in_channels = params["feat_dim"]
@@ -47,6 +47,7 @@ class Encoder(nn.Module):
         self.sampling = Sampling()
 
     def forward(self, x):
+        x = x.to_device(self.device)
         x = x.permute(
             0, 2, 1
         )  # Change from (batch, seq_len, feat_dim) to (batch, feat_dim, seq_len)
@@ -72,16 +73,18 @@ class TrendLayer(nn.Module):
             params["feat_dim"] * params["trend_poly"],
             params["feat_dim"] * params["trend_poly"],
         )
+        self.device = params["device"]
 
     def forward(self, z):
         # Process the input through two dense layers
-        print("Shape of z before trend layer:", z.shape)
+        # print("Shape of trend layer:", z.shape)
+        z = z.to(self.device)
         trend_params = F.relu(self.trend_dense1(z))
-        print("Shape of trend_params after first dense layer:", trend_params.shape)
+        # print("Shape of trend_params after first dense layer:", trend_params.shape)
         trend_params = self.trend_dense2(trend_params)
-        print("Shape of trend_params after second dense layer:", trend_params.shape)
+        # print("Shape of trend_params after second dense layer:", trend_params.shape)
         trend_params = trend_params.view(-1, self.feat_dim, self.trend_poly)
-        print("Shape of trend_params after reshaping:", trend_params.shape)
+        # print("Shape of trend_params after reshaping:", trend_params.shape)
         # Create the polynomial terms for the trend
         lin_space = torch.linspace(0, 1, self.seq_len, device=z.device)
         poly_space = torch.stack(
@@ -102,6 +105,7 @@ class SeasonalLayer(nn.Module):
         self.seq_len = params["seq_len"]
         self.latent_dim = params["latent_dim"]
         self.custom_seas = params["custom_seas"]
+        self.device = params["device"]
         self.dense_layers = nn.ModuleList(
             [
                 nn.Linear(self.latent_dim, self.feat_dim * num_seasons)
@@ -144,11 +148,13 @@ class LevelModel(nn.Module):
         self.feat_dim = params["feat_dim"]
         self.seq_len = params["seq_len"]
         self.latent_dim = params["latent_dim"]
+        self.device = params["device"]
         self.level_dense1 = nn.Linear(self.latent_dim, self.feat_dim)
         self.level_dense2 = nn.Linear(self.feat_dim, self.feat_dim)
 
     def forward(self, z):
         # Process input through two dense layers
+        z = z.to(self.device)
         level_params = F.relu(self.level_dense1(z))
         level_params = self.level_dense2(level_params)
 
@@ -167,35 +173,35 @@ class LevelModel(nn.Module):
 
 
 class DecoderResidual(nn.Module):
-    def __init__(self, input_dim, hidden_layer_sizes, seq_len, feat_dim):
+    def __init__(self, params):
         super(DecoderResidual, self).__init__()
-        self.input_dim = input_dim
-        self.hidden_layer_sizes = hidden_layer_sizes
-        self.seq_len = seq_len
-        self.feat_dim = feat_dim
-
+        self.input_dim = params["input_dim"]
+        self.hidden_layer_sizes = params["hidden_layer_sizes"]
+        self.seq_len = params["seq_len"]
+        self.feat_dim = params["feat_dim"]
+        self.device = params["device"]
         # Dense layer to reshape input to suitable dimension
-        self.dense = nn.Linear(input_dim, hidden_layer_sizes[-1] * seq_len)
+        self.dense = nn.Linear(self.input_dim, self.hidden_layer_sizes[-1] * self.seq_len)
 
         # Convolutional transpose layers
         self.conv_transpose_layers = nn.ModuleList()
         # Initialize convolutional transpose layers for upsampling
-        for i, num_filters in enumerate(reversed(hidden_layer_sizes[:-1])):
+        for i, num_filters in enumerate(reversed(self.hidden_layer_sizes[:-1])):
             self.conv_transpose_layers.append(
-                nn.ConvTranspose1d(
-                    in_channels=hidden_layer_sizes[-i - 1],
-                    out_channels=num_filters,
-                    kernel_size=3,
-                    stride=2,
-                    padding=1,
-                    output_padding=1,
-                )
+            nn.ConvTranspose1d(
+                in_channels=self.hidden_layer_sizes[-i - 1],
+                out_channels=num_filters,
+                kernel_size=3,
+                stride=2,
+                padding=1,
+                output_padding=1,
+            )
             )
 
         # Last convolutional transpose to match feature dimensions
         self.final_conv_transpose = nn.ConvTranspose1d(
-            in_channels=hidden_layer_sizes[0],
-            out_channels=feat_dim,
+            in_channels=self.hidden_layer_sizes[0],
+            out_channels=self.feat_dim,
             kernel_size=3,
             stride=2,
             padding=1,
@@ -203,6 +209,7 @@ class DecoderResidual(nn.Module):
         )
 
     def forward(self, x):
+        x= x.to(self.device)
         x = F.relu(self.dense(x))
         x = x.view(-1, self.hidden_layer_sizes[-1], self.seq_len)
 
@@ -222,7 +229,7 @@ class Decoder(nn.Module):
         self.seq_len = params["seq_len"]
         self.trend_poly = params["trend_poly"]
         self.custom_seas = params["custom_seas"]
-
+        self.device = params["device"]
         # Initialize components
         if self.trend_poly > 0:
             self.trend_layer = TrendLayer(params)
@@ -234,12 +241,13 @@ class Decoder(nn.Module):
         self.use_residual_conn = True
 
     def forward(self, z):
+        z= z.to(self.device)
         outputs = self.level_layer(z)
-        print("Shape of outputs after level layer:", outputs.shape)
+        # print("Shape of outputs after level layer:", outputs.shape)
         if self.trend_poly > 0:
             trend_vals = self.trend_layer(z)
             outputs = trend_vals if outputs is None else outputs + trend_vals
-        print("Shape of outputs after trend layer:", outputs.shape)
+        # print("Shape of outputs after trend layer:", outputs.shape)
         # if len(self.custom_seas) > 0:
         #     seasonal_vals = self.seasonal_layer(z)
         #     outputs = seasonal_vals if outputs is None else outputs + seasonal_vals
@@ -248,7 +256,6 @@ class Decoder(nn.Module):
             residuals = self.residual_dense(z)
             residuals = residuals.view(-1, self.seq_len, self.feat_dim)
             outputs = residuals if outputs is None else outputs + residuals
-
 
         return outputs
 
@@ -273,6 +280,7 @@ class TimeVAE(nn.Module):
         self.decoder = Decoder(params)
 
     def forward(self, x):
+        x=x.to(self.device)
         z_mean, z_log_var, _ = self.encoder(x)
         z = self._reparameterize(z_mean, z_log_var)
         reconstructed_x = self.decoder(z)
@@ -315,13 +323,13 @@ class TimeVAE(nn.Module):
             train_loss = 0.0
             for batch in train_loader:
                 loss = self.train_step(batch, optimizer)
-                train_loss += loss.item()
+                train_loss += loss
             train_loss /= len(train_loader)
 
             test_loss = 0.0
             for batch in test_loader:
                 loss = self.test_step(batch)
-                test_loss += loss.item()
+                test_loss += loss
             test_loss /= len(test_loader)
 
             print(

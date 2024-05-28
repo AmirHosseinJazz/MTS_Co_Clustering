@@ -17,3 +17,7 @@
 
 
 
+-- model :TG-10 
+    : seeing improvements in latest model -> test on break size -> 30
+    : still on 8 feature
+    : lr back to 0.001 

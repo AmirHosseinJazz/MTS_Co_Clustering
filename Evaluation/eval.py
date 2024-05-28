@@ -18,6 +18,9 @@ import warnings
 warnings.filterwarnings("ignore")
 from util import load_data
 
+import ast
+import LSTMClassifier
+
 
 # Method 1: Marginal Distribution Comparison
 def marginal_distribution_comparison(
@@ -319,57 +322,78 @@ def shape_based_distances(real_data, generated_data, model_name):
 
         # Compute Shape-Based Distance (SBD)
         sbd_dist, _ = dtw_path_from_metric(
-            real_sequence, generated_sequence, metric="sqeuclidean"
+            real_sequence, generated_sequence, metric="euclidean"
         )
         sbd_distances.append(sbd_dist)
 
     plt.figure(figsize=(18, 6))
 
     # Euclidean Distance
-    plt.subplot(1, 3, 1)
-    sns.histplot(euclidean_distances, kde=True, color="blue")
-    plt.title("Distribution of Euclidean Distances")
-    plt.xlabel("Euclidean Distance")
-    plt.ylabel("Frequency")
+    try:
+        plt.subplot(1, 3, 1)
+        sns.histplot(euclidean_distances, kde=True, color="blue")
+        plt.title("Distribution of Euclidean Distances")
+        plt.xlabel("Euclidean Distance")
+        plt.ylabel("Frequency")
+    except Exception as e:
+        print(f"Error occurred while plotting the subplot:")
 
-    # Frechet Distance
-    plt.subplot(1, 3, 2)
-    sns.histplot(frechet_distances, kde=True, color="green")
-    plt.title("Distribution of Frechet Distances")
-    plt.xlabel("Frechet Distance")
-    plt.ylabel("Frequency")
+    try:
+        plt.subplot(1, 3, 2)
+        sns.histplot(frechet_distances, kde=True, color="green")
+        plt.title("Distribution of Frechet Distances")
+        plt.xlabel("Frechet Distance")
+        plt.ylabel("Frequency")
+    except Exception as e:
+        print(f"Error occurred while plotting the subplot:")
 
-    # Shape-Based Distance (SBD)
-    plt.subplot(1, 3, 3)
-    sns.histplot(sbd_distances, kde=True, color="red")
-    plt.title("Distribution of Shape-Based Distances")
-    plt.xlabel("Shape-Based Distance")
-    plt.ylabel("Frequency")
+    try:
+        plt.subplot(1, 3, 3)
+        sns.histplot(sbd_distances, kde=True, color="red")
+        plt.title("Distribution of Shape-Based Distances")
+        plt.xlabel("Shape-Based Distance")
+        plt.ylabel("Frequency")
+    except Exception as e:
+        print(f"Error occurred while plotting the subplot:")
 
-    plt.tight_layout()
-    plt.savefig(f"./sequence_level/{model_name}/shape_based_distances.png")
+    try:
+        plt.tight_layout()
+        plt.savefig(f"./sequence_level/{model_name}/shape_based_distances.png")
+    except Exception as e:
+        print(f"Error occurred while plotting the subplots:")
+
     distances = []
-    distances.append(
-        {
-            "euclidean_mean": np.mean(euclidean_distances),
-            "euclidean_median": np.median(euclidean_distances),
-            "euclidean_std": np.std(euclidean_distances),
-        }
-    )
-    distances.append(
-        {
-            "frechet_mean": np.mean(frechet_distances),
-            "frechet_median": np.median(frechet_distances),
-            "frechet_std": np.std(frechet_distances),
-        }
-    )
-    distances.append(
-        {
-            "sbd_mean": np.mean(sbd_distances),
-            "sbd_median": np.median(sbd_distances),
-            "sbd_std": np.std(sbd_distances),
-        }
-    )
+    try:
+        distances.append(
+            {
+                "euclidean_mean": np.mean(euclidean_distances),
+                "euclidean_median": np.median(euclidean_distances),
+                "euclidean_std": np.std(euclidean_distances),
+            }
+        )
+    except Exception as e:
+        print("Error occurred while calculating Euclidean distance statistics")
+    try:
+
+        distances.append(
+            {
+                "frechet_mean": np.mean(frechet_distances),
+                "frechet_median": np.median(frechet_distances),
+                "frechet_std": np.std(frechet_distances),
+            }
+        )
+    except Exception as e:
+        print("Error occurred while calculating Frechet distance statistics")
+    try:
+        distances.append(
+            {
+                "sbd_mean": np.mean(sbd_distances),
+                "sbd_median": np.median(sbd_distances),
+                "sbd_std": np.std(sbd_distances),
+            }
+        )
+    except Exception as e:
+        print("Error occurred while calculating SBD distance statistics")
     pd.DataFrame(distances).to_csv(
         f"./sequence_level/{model_name}/shape_based_distances_stats.csv", index=False
     )
@@ -380,6 +404,10 @@ def shape_based_distances(real_data, generated_data, model_name):
 #         os.makedirs(f'./predictive_performance/{model_name}')
 #     num_features = real_data.shape[2]
 #     metrics = []
+
+
+def distinctive_metric(model_name):
+    LSTMClassifier.main(model_name, num_epochs=10, learning_rate=0.01)
 
 
 if __name__ == "__main__":
@@ -441,57 +469,106 @@ if __name__ == "__main__":
         raise Exception(f"Could not load the configuration file: {E}")
     # print(model_config)
 
+    generated_data = np.load(f"../Generated/{args.model_name}/generated_samples.npy")
+    print("Shape of generated_data:", generated_data.shape)
 
-    if model_config['data_source']=='29var':
-        real_data, feature_names = load_data('../Data/PreProcessed/29var/df29.xlsx',break_to_smaller=model_config['break_data'], break_size=model_config['break_size'],leave_out_problematic_features=['leave_out_problematic_features'],cutoff_data=model_config['cutoff_data'])
-    elif model_config['data_source']=='12var':
-        real_data, feature_names = load_data('../Data/PreProcessed/12var/df12.xlsx',break_to_smaller=model_config['break_data'], break_size=model_config['break_size'],leave_out_problematic_features=['leave_out_problematic_features'],cutoff_data=model_config['cutoff_data'])
+    if model_config["data_source"] == "29var":
+        real_data, feature_names = load_data(
+            "../Data/PreProcessed/29var/df29.xlsx",
+            break_to_smaller=ast.literal_eval(model_config["break_data"]),
+            break_size=model_config["break_size"],
+            leave_out_problematic_features=ast.literal_eval(
+                model_config["leave_out_problematic_features"]
+            ),
+            cutoff_data=model_config["cutoff_data"],
+            feature_shape=generated_data.shape[-1],
+        )
+    elif model_config["data_source"] == "12var":
+        real_data, feature_names = load_data(
+            "../Data/PreProcessed/12var/df12.xlsx",
+            break_to_smaller=ast.literal_eval(model_config["break_data"]),
+            break_size=model_config["break_size"],
+            leave_out_problematic_features=ast.literal_eval(
+                model_config["leave_out_problematic_features"]
+            ),
+            cutoff_data=model_config["cutoff_data"],
+        )
+    # print(model_config)
 
-    generated_data=np.load(f'../Generated/{args.model_name}/generated_samples.npy')
-    # print('Shape of generated_data:', generated_data.shape)
-    # print('Sample', generated_data[0])
+    # print("Sample", generated_data[0])
     # print(feature_names)
 
-    # # randomly pick 100 samples from real_data
-    # real_data = real_data[np.random.choice(real_data.shape[0], 100, replace=False)]
-    # # print('randomly picked samples from real_data to match the dimension of generated_data')
-    # print('Shape of real_data:', real_data.shape)
-    # print('Sample', real_data[0])
-
-    if args.method == 'marginal_dist':
+    print("Shape of real_data:", real_data.shape)
+    if args.method == "marginal_dist":
         print("Method: Marginal Distribution Comparison")
-        print("Results are saved in the folder 'marginal_dist' and subfolder with model name")
-        marginal_distribution_comparison(real_data, generated_data, args.model_name,feature_names)
-    if args.method == 'dist_compare':
-        multivariate_distribution_comparison(real_data, generated_data, args.model_name,feature_names)
+        print(
+            "Results are saved in the folder 'marginal_dist' and subfolder with model name"
+        )
+        marginal_distribution_comparison(
+            real_data, generated_data, args.model_name, feature_names
+        )
+    if args.method == "dist_compare":
+        multivariate_distribution_comparison(
+            real_data, generated_data, args.model_name, feature_names
+        )
         print("Method: Multivariate Distribution Comparison")
-        print("Results are saved in the folder 'dist_compare' and subfolder with model name")
+        print(
+            "Results are saved in the folder 'dist_compare' and subfolder with model name"
+        )
     if args.method == "temporal":
-        temporal_dynamics_comparison(real_data, generated_data, args.model_name,feature_names)
+        temporal_dynamics_comparison(
+            real_data, generated_data, args.model_name, feature_names
+        )
         print("Method: Temporal Dynamics Comparison")
-        print("Results are saved in the folder 'temporal_dynamics' and subfolder with model name")
+        print(
+            "Results are saved in the folder 'temporal_dynamics' and subfolder with model name"
+        )
     if args.method == "sequence_level":
         print("Method1: Dynamic Time Warping (DTW) Comparison")
         dwt(real_data, generated_data, args.model_name)
         print("Method2: Shape-Based Distances Comparison")
         shape_based_distances(real_data, generated_data, args.model_name)
-        print("Results are saved in the folder 'sequence_level' and subfolder with model name")
-
-    if args.method =="all":
+        print(
+            "Results are saved in the folder 'sequence_level' and subfolder with model name"
+        )
+    if args.method == "discriminative":
+        print("Method: Distinctive Metric")
+        distinctive_metric(args.model_name)
+        print(
+            "Results are saved in the folder 'discriminative' and subfolder with model name"
+        )
+    if args.method == "all":
         print("Method: Marginal Distribution Comparison")
-        print("Results are saved in the folder 'marginal_dist' and subfolder with model name")
-        marginal_distribution_comparison(real_data, generated_data, args.model_name,feature_names)
+        print(
+            "Results are saved in the folder 'marginal_dist' and subfolder with model name"
+        )
+        marginal_distribution_comparison(
+            real_data, generated_data, args.model_name, feature_names
+        )
         print("Method: Multivariate Distribution Comparison")
-        print("Results are saved in the folder 'dist_compare' and subfolder with model name")
-        multivariate_distribution_comparison(real_data, generated_data, args.model_name,feature_names)
+        print(
+            "Results are saved in the folder 'dist_compare' and subfolder with model name"
+        )
+        multivariate_distribution_comparison(
+            real_data, generated_data, args.model_name, feature_names
+        )
         print("Method: Temporal Dynamics Comparison")
-        print("Results are saved in the folder 'temporal_dynamics' and subfolder with model name")
-        temporal_dynamics_comparison(real_data, generated_data, args.model_name,feature_names)
+        print(
+            "Results are saved in the folder 'temporal_dynamics' and subfolder with model name"
+        )
+        temporal_dynamics_comparison(
+            real_data, generated_data, args.model_name, feature_names
+        )
         print("Method1: Dynamic Time Warping (DTW) Comparison")
         dwt(real_data, generated_data, args.model_name)
         print("Method2: Shape-Based Distances Comparison")
         shape_based_distances(real_data, generated_data, args.model_name)
-        print("Results are saved in the folder 'sequence_level' and subfolder with model name")
+        print(
+            "Results are saved in the folder 'sequence_level' and subfolder with model name"
+        )
+        print("Method: Distinctive Metric")
+        distinctive_metric(args.model_name)
+
     # if args.method =="predictive":
     #     print("Method: Predictive Performance Comparison")
     #     print("Results are saved in the folder 'predictive_performance' and subfolder with model name")
