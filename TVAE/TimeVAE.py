@@ -47,17 +47,20 @@ class Encoder(nn.Module):
         self.sampling = Sampling()
 
     def forward(self, x):
-        # x = x.to_device(self.device)
-        x = x.permute(
+          x = x.permute(
             0, 2, 1
-        )  # Change from (batch, seq_len, feat_dim) to (batch, feat_dim, seq_len)
-        x = self.conv_layers(x)
-        x = self.flatten(x)
-        z_mean = self.fc_z_mean(x)
-        z_log_var = self.fc_z_log_var(x)
-        z = self.sampling(z_mean, z_log_var)
-        return z_mean, z_log_var, z
-
+          )  # Change from (batch, seq_len, feat_dim) to (batch, feat_dim, seq_len)
+          # print(f"Input to conv_layers: {x.shape}")
+          x = self.conv_layers(x)
+          # print(f"Output of conv_layers: {x.shape}")
+          x = self.flatten(x)
+          # print(f"Output of flatten: {x.shape}")
+          z_mean = self.fc_z_mean(x)
+          # print(f"z_mean shape: {z_mean.shape}")
+          z_log_var = self.fc_z_log_var(x)
+          # print(f"z_log_var shape: {z_log_var.shape}")
+          z = self.sampling(z_mean, z_log_var)
+          return z_mean, z_log_var, z
 
 class TrendLayer(nn.Module):
     def __init__(self, params):

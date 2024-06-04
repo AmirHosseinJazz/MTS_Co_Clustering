@@ -1,0 +1,44 @@
+
+Points to Discuss -
+    ++      TimeVAE is done - Check for metrics and quality
+    ++      Breaking up data into smaller chunks tested 
+    ++      Feature engineering on categorical 
+    ++      Versions of TimeGAN and TimeVAE without Craving Variables 
+    
+    
+    Quantutative measures =  Discriminative (TimeGAN Paper) 2 Layer LSTM -> Sigmoid
+                             predictive Measure (TimeGan Paper) 2 Layer LSTM 
+    Fix TSNE => Done
+
+
+
+Next to do [embeddings acceptable now]-
+    Community detection on Graph built by a distance measure 
+    CCTN
+    Complex Networks
+    
+
+
+
+--TODO:
+    inference.py -> Encoding part , data should be according to each model's input
+    Fix wandb logs for time gan7
+    
+
+
+-----
+        Q: From clusteroing on individuals to co-clustering?
+        : For LSTM Classifier - > use a version with chunks of input (instead of the whole)
+        Community -> add distance (DTW)
+        Time VAE PAper => Q: how we construct the latent dimension in the multivariate case ? (180,latent_dim,24) dimension of the mean and variance
+                        - Discuss next meeting architecture
+
+
+        -
+        H1:
+            Each node represents one variable from one person => each person will be described by 24 nodes
+            Cluster first on variables = then person
+
+        H2:
+            if the latent dim (x1,x2) => then we do the clustering first on x2 then on the people
+            

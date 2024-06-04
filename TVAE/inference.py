@@ -44,7 +44,9 @@ def encode(data, model_name, params):
     """
     model = TimeVAE(params)
     model.load_state_dict(torch.load(f"saved_models/{model_name}/model.pth"))
+    model.to(params['device'])
     model.eval()
+    print('Data Shape is',data.shape)
 
     dataset = TimeVAEdataset(data)
     dataloader = torch.utils.data.DataLoader(
@@ -56,7 +58,10 @@ def encode(data, model_name, params):
     ### Change this to use the model
     with torch.no_grad():
         for X_mb in dataloader:
-            encoded_data.append(model.encoder(X_mb))
+            X_mb = X_mb.to(params["device"]) 
+            encoded_output = model.encoder(X_mb)[-1]
+            encoded_output = encoded_output.cpu()  # Move the encoded output back to CPU
+            encoded_data.append(encoded_output)
     encoded_data = torch.cat(encoded_data, dim=0)
     print(encoded_data.shape)
     if not os.path.exists(f"../Generated/{model_name}/"):
@@ -119,7 +124,7 @@ def main():
         if params["data_source"] == "29var":
             data = load_data(
                 "../Data/PreProcessed/29var/df29.xlsx",
-                break_to_smaller=params["break_data"],
+                break_to_smaller=False,
                 break_size=params["break_size"],
                 leave_out_problematic_features=params["leave_out_problematic_features"],
                 cutoff_data=params["cutoff_data"],
