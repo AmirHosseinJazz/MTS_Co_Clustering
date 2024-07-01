@@ -31,8 +31,10 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs=10, device
     for epoch in range(num_epochs):
         running_loss = 0.0
         for inputs, targets in train_loader:
-            inputs = inputs.float().to(device)  # Move inputs to GPU
-            targets = targets.float().to(device)  # Move targets to GPU
+            inputs = inputs.to(device).float()  # Convert inputs to float if not already
+            targets = targets.to(
+                device
+            ).float()  # Convert targets to float if not already
             outputs = model(inputs)
 
             optimizer.zero_grad()
@@ -52,8 +54,11 @@ def evaluate_model(model, test_loader, criterion, device="cpu"):
     with torch.no_grad():
         running_loss = 0.0
         for inputs, targets in test_loader:
-            inputs = inputs.float().to(device)  # Move inputs to GPU
-            targets = targets.float().to(device)  # Move targets to GPU
+            inputs = inputs.to(device).float()  # Convert inputs to float if not already
+            targets = targets.to(
+                device
+            ).float()  # Convert targets to float if not already
+
             outputs = model(inputs)
 
             loss = criterion(outputs, targets)  # Calculate loss
@@ -65,10 +70,8 @@ def evaluate_model(model, test_loader, criterion, device="cpu"):
 
 
 def main(experiment_name, experiment_technique, experiment_type):
-    # Check if GPU is available
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-
     # Load data
     real_data, feature_names = load_data(
         "../Data/PreProcessed/29var/df29.xlsx",
@@ -76,13 +79,10 @@ def main(experiment_name, experiment_technique, experiment_type):
         leave_out_problematic_features=True,
         feature_shape=30,
     )
-    real_data = torch.tensor(real_data, dtype=torch.float32)  # Convert to tensor
-
     print(real_data.shape)
     print(f"Experiment Technique: {experiment_technique}")
     print(f"Experiment Type: {experiment_type}")
     print(f"Experiment Name: {experiment_name}")
-
     try:
         partitions = pd.read_csv(
             f"../{experiment_technique}/experiment_{experiment_type}/{experiment_name}/assignments.txt",
@@ -124,7 +124,7 @@ def main(experiment_name, experiment_technique, experiment_type):
 
     # print(clusters.keys())
     for i in range(partitions["Cluster"].nunique()):
-        clusters[i] = torch.tensor(np.array(clusters[i]), dtype=torch.float32)
+        clusters[i] = np.array(clusters[i])
 
     mse_errors = []
 
@@ -145,14 +145,12 @@ def main(experiment_name, experiment_technique, experiment_type):
             hidden_size=32,
             num_layers=1,
             output_size=data_cluster.shape[-1],
-        )
-        model.to(device)  # Move model to GPU
-
+        ).to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
 
         print(f"Training model for cluster {key + 1}")
         train_model(
-            model, train_loader, nn.MSELoss(), optimizer, num_epochs=50, device=device
+            model, train_loader, nn.MSELoss(), optimizer, num_epochs=2, device=device
         )
 
         print(f"Evaluating model for cluster {key + 1}")
