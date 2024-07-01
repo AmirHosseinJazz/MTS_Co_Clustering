@@ -152,7 +152,7 @@ def main(experiment_name, experiment_technique, experiment_type):
 
         print(f"Training model for cluster {key + 1}")
         train_model(
-            model, train_loader, nn.MSELoss(), optimizer, num_epochs=2, device=device
+            model, train_loader, nn.MSELoss(), optimizer, num_epochs=50, device=device
         )
 
         print(f"Evaluating model for cluster {key + 1}")
