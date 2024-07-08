@@ -27,14 +27,21 @@ def generate_samples(model_name, params):
         generated_samples.append(samples)
     generated_samples = torch.cat(generated_samples, dim=0)
 
+    def map_to_likert_scale(data, scale=[1, 2, 3, 4, 5]):
+        # Ensure the values are within the range [1, 5]
+        data = torch.clip(data, min=1, max=5)
+        # Map continuous values to discrete Likert scale values
+        return torch.round(data)
+
+    discretized_samples = map_to_likert_scale(generated_samples)
+
     if not os.path.exists(f"../Generated/{model_name}/"):
         os.makedirs(f"../Generated/{model_name}/")
-    print(generated_samples.shape)
-    # print(generated_samples[0])
+    print(discretized_samples.shape)
     print(model_name)
 
     np.save(
-        f"../Generated/{model_name}/generated_samples.npy", generated_samples.numpy()
+        f"../Generated/{model_name}/generated_samples.npy", discretized_samples.numpy()
     )
 
 
@@ -44,9 +51,9 @@ def encode(data, model_name, params):
     """
     model = TimeVAE(params)
     model.load_state_dict(torch.load(f"saved_models/{model_name}/model.pth"))
-    model.to(params['device'])
+    model.to(params["device"])
     model.eval()
-    print('Data Shape is',data.shape)
+    print("Data Shape is", data.shape)
 
     dataset = TimeVAEdataset(data)
     dataloader = torch.utils.data.DataLoader(
@@ -58,7 +65,7 @@ def encode(data, model_name, params):
     ### Change this to use the model
     with torch.no_grad():
         for X_mb in dataloader:
-            X_mb = X_mb.to(params["device"]) 
+            X_mb = X_mb.to(params["device"])
             encoded_output = model.encoder(X_mb)[-1]
             encoded_output = encoded_output.cpu()  # Move the encoded output back to CPU
             encoded_data.append(encoded_output)
