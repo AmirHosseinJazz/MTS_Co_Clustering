@@ -20,6 +20,20 @@ import os
 from datetime import datetime
 from util import load_data
 import ast
+from collections import Counter
+import math
+
+
+def create_dir():
+    exp_id = (
+        str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+        .replace(" ", "")
+        .replace(":", "")
+    )
+    save_dir = f"./experiment_BiPartite/experiment_{exp_id}"
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    return save_dir
 
 
 def evaluate_modularity(G, partition):
@@ -46,19 +60,56 @@ def evaluate_silhouette(G, partition):
         return None
 
 
-def community_detection_and_evaluation(graphs):
-    results = {}
-    for metric, G in graphs.items():
-        print(f"\nProcessing graph for {metric}:")
-        partition = community_louvain.best_partition(G, resolution=1.0)
-        modularity = evaluate_modularity(G, partition)
-        silhouette = evaluate_silhouette(G, partition)
-        results[metric] = {
-            "graph": G,
-            "partition": partition,
-            "modularity": modularity,
-            "silhouette": silhouette,
-        }
+def calculate_coverage(graph, partition):
+    """
+    Calculate the coverage of the partition on the given graph.
+
+    Parameters:
+    graph (networkx.Graph): The graph.
+    partition (dict): A dictionary where keys are nodes and values are the community assigned to each node.
+
+    Returns:
+    float: The coverage of the partition.
+    """
+    intra_community_edges = 0
+    for u, v in graph.edges():
+        if partition[u] == partition[v]:
+            intra_community_edges += 1
+    coverage = intra_community_edges / graph.number_of_edges()
+    return coverage
+
+
+def calculate_entropy(partition):
+    """
+    Calculate the entropy of the partition.
+
+    Parameters:
+    partition (dict): A dictionary where keys are nodes and values are the community assigned to each node.
+
+    Returns:
+    float: The entropy of the partition.
+    """
+    total_nodes = len(partition)
+    community_counts = Counter(partition.values())
+    entropy = 0.0
+    for count in community_counts.values():
+        p_xi = count / total_nodes
+        entropy -= p_xi * math.log2(p_xi)
+    return entropy
+
+
+def community_detection_and_evaluation(G):
+    partition = community_louvain.best_partition(G, resolution=1.0)
+    modularity = evaluate_modularity(G, partition)
+    silhouette = evaluate_silhouette(G, partition)
+    coverage = calculate_coverage(G, partition)
+    entropy = calculate_entropy(partition)
+    results = {
+        "graph": G,
+        "partition": partition,
+        "modularity": modularity,
+        "silhouette": silhouette,
+    }
     return results
 
 
@@ -68,65 +119,51 @@ def dtw_distance(ts1, ts2):
     return distance
 
 
-def compute_featurewise_distances(instances, features, metric="euclidean"):
-    """Compute distances between each instance and each feature."""
-    if metric == "dtw":
-        # Handling DTW distance specially
-        distances = np.zeros((instances.shape[0], features.shape[0]))
-        for i in range(instances.shape[0]):
-            for j in range(features.shape[0]):
-                dist, _ = fastdtw(
-                    instances[i].reshape(-1, 1),
-                    features[j].reshape(-1, 1),
-                    dist=euclidean,
-                )
-                distances[i, j] = dist
-    else:
-        # Use standard distance metrics for comparison
-        distances = pairwise_distances(instances, features, metric=metric)
-    return distances
+def compute_featurewise_averages(data):
+    """
+    Compute the average value of each feature for each individual.
+
+    Parameters:
+    data (numpy.ndarray): The data array of shape (num_instances, num_timesteps, num_features).
+
+    Returns:
+    numpy.ndarray: The average values of shape (num_instances, num_features).
+    """
+    # Compute the average value of each feature for each individual
+    averages = np.mean(data, axis=1)
+    return averages
 
 
-def create_bipartite_graph(data, metrics=["euclidean", "dtw", "cosine", "manhattan"]):
+def create_bipartite_graph(data):
+    """
+    Create a bipartite graph from the given data.
+
+    Parameters:
+    data (numpy.ndarray): The data array of shape (num_instances, num_timesteps, num_features).
+
+    Returns:
+    networkx.Graph: The bipartite graph.
+    """
     num_instances, num_timesteps, num_features = data.shape
 
-    # Transpose data to separate features (as continuous sequences over all instances)
-    data_transposed = data.transpose(2, 0, 1).reshape(
-        num_features, num_instances * num_timesteps
-    )
-    print(
-        data_transposed.shape
-    )  # Should now be (num_features, num_instances * num_timesteps
-    # Prepare instance data (flattening time dimension)
-    data_flattened = data.reshape(num_instances, num_timesteps * num_features)
-    print(
-        data_flattened.shape
-    )  # Should now be (num_instances, num_timesteps * num_features)
-    graphs = {}
-    for metric in metrics:
-        print(f"Processing metric: {metric}")
-        # Calculate distances between flattened instance data and transposed feature data
-        distances = compute_featurewise_distances(
-            data_flattened, data_transposed, metric=metric
-        )
-        print(distances.shape)  # Should now be (num_instances, num_features)
+    # Compute the average feature values for each individual
+    averages = compute_featurewise_averages(data)
 
-        G = nx.Graph()
-        G.add_nodes_from(range(num_instances), bipartite=0)  # Instances
-        G.add_nodes_from(
-            range(num_instances, num_instances + num_features), bipartite=1
-        )  # Features
+    G = nx.Graph()
+    G.add_nodes_from(range(num_instances), bipartite=0)  # Individuals
+    G.add_nodes_from(
+        range(num_instances, num_instances + num_features), bipartite=1
+    )  # Features
 
-        for i in range(num_instances):
-            for j in range(num_features):
-                G.add_edge(i, num_instances + j, weight=1 / (1 + distances[i, j]))
+    # Add edges with weights based on the average feature values
+    for i in range(num_instances):
+        for j in range(num_features):
+            G.add_edge(i, num_instances + j, weight=averages[i, j])
 
-        graphs[metric] = G
-        break
-    return graphs
+    return G
 
 
-def main(normalize, data, feature_names):
+def main(normalize, data, feature_names, distance_metric):
 
     # Normalize the data
     if normalize:
@@ -134,14 +171,10 @@ def main(normalize, data, feature_names):
         data = scaler.fit_transform(data)
     graphs = create_bipartite_graph(data)
     results = community_detection_and_evaluation(graphs)
-    # exp_id = (
-    #     str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
-    #     .replace(" ", "")
-    #     .replace(":", "")
-    # )
-    # save_dir = f"./no_embedding_experiment_{exp_id}"
-    # if not os.path.exists(save_dir):
-    #     os.makedirs(save_dir)
+    save_dir = create_dir()
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    print(results)
 
     # for metric, result in results.items():
     #     G = result["graph"]
@@ -185,6 +218,13 @@ if __name__ == "__main__":
         type=str,
         default="TimeVAE_model8",
         help="Name of the model used to generate the data. Default is TimeGAN_model1.",
+    )
+    parser.add_argument(
+        "--distance_metric",
+        type=str,
+        default="euclidean",
+        choices=["euclidean", "cosine", "manhattan", "dtw"],
+        help="Distance metric to use for clustering. Default is euclidean.",
     )
     args = parser.parse_args()
     params = {}
@@ -254,8 +294,6 @@ if __name__ == "__main__":
             cutoff_data=model_config["cutoff_data"],
         )
     print("Real Data Shape:", real_data.shape)
-    
+
     # Run the main function
-    main(args.normalize, real_data, feature_names)
-
-
+    main(args.normalize, real_data, feature_names, args.distance_metric)
