@@ -46,3 +46,4 @@ if __name__ == "__main__":
         pass
 
     pd.concat(all_experiments).to_csv("co_clustering_evaluation.csv")
+    print("Done")

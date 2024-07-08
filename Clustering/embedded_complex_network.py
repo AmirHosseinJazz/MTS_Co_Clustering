@@ -578,7 +578,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_name",
         type=str,
-        default="TimeVAE_model8",
+        default="TimeVAE_model9",
         help="Name of the model used to generate the data. Default is TimeVAE_model8.",
     )
     args = parser.parse_args()

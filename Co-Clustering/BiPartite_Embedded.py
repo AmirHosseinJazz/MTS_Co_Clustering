@@ -159,6 +159,7 @@ def main(
     method,
     distance_metric,
     n_clusters,
+    model_name,
 ):
     print("Latent Vectors Shape:", latent_vectors.shape)
     print(f"Bi-Clustering : {method}")
@@ -211,6 +212,7 @@ def main(
             "Entropy": entropy,
             "Silhouette": silhouette,
             "Modularity": modularity,
+            "model_name": model_name,
         }
         metrics_df = pd.DataFrame.from_dict(
             metrics_dict, orient="index", columns=["Value"]
@@ -286,6 +288,7 @@ def main(
             "Coverage": coverage,
             "Entropy": entropy,
             "Silhouette": average_silhouette,
+            "model_name": model_name,
         }
         metrics_df = pd.DataFrame.from_dict(
             metrics_dict, orient="index", columns=["Value"]
@@ -496,6 +499,7 @@ def main(
             "Entropy": entropy,
             "Silhouette": silhouette,
             "Modularity": modularity,
+            "model_name": model_name,
         }
         metrics_df = pd.DataFrame.from_dict(
             metrics_dict, orient="index", columns=["Value"]
@@ -691,4 +695,5 @@ if __name__ == "__main__":
         args.method,
         args.distance_metric,
         args.n_clusters,
+        args.model_name,
     )
