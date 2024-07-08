@@ -64,8 +64,8 @@ from tqdm import tqdm
 #     parser.add_argument(
 #         "--model_name",
 #         type=str,
-#         default="TimeVAE_model8",
-#         help="Name of the model used to generate the data. Default is TimeVAE_model8.",
+#         default="TimeVAE_model9",
+#         help="Name of the model used to generate the data. Default is TimeVAE_model9.",
 #     )
 #     args = parser.parse_args()
 
@@ -90,7 +90,7 @@ dbscan_eps = [0.1, 0.2, 0.3, 0.4, 0.5]
 dbscan_min_samples = [2, 3, 4, 5, 6, 7, 8, 9, 10]
 spectral_num_clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10]
 spectral_affinity = ["nearest_neighbors", "rbf"]
-model_name = ["TimeVAE_model8"]
+model_name = ["TimeVAE_model9"]
 
 
 
@@ -149,7 +149,7 @@ def run_script_kmeans(combination):
             "--k_means_num_init",
             str(k_means_num_init),
             "--model_name",
-            "TimeVAE_model8",
+            "TimeVAE_model9",
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
@@ -177,7 +177,7 @@ def run_script_hierarchical(combination):
             "--hierarchical_linkage",
             hierarchical_linkage,
             "--model_name",
-            "TimeVAE_model8",
+            "TimeVAE_model9",
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
@@ -207,7 +207,7 @@ def run_script_dbscan(combination):
             str(dbscan_min_samples),
             "--model_name",
             # model_name,
-            "TimeVAE_model8",
+            "TimeVAE_model9",
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
@@ -237,7 +237,7 @@ def run_script_spectral(combination):
             spectral_affinity,
             "--model_name",
             # model_name,
-            "TimeVAE_model8",
+            "TimeVAE_model9",
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
