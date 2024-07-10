@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import ks_2samp
+from scipy import stats
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics import pairwise_distances
@@ -58,11 +59,17 @@ def marginal_distribution_comparison(
                 "p_value": p_value,
             }
         )
+        kl_divergence = stats.entropy(
+            real_flattened, generated_flattened, base=None)
+        
         pd.DataFrame(ks_stats).to_csv(
             f"./marginal_dist/{model_name}/ks_stats.csv", index=False
         )
 
-
+        # write kl divergence to file
+        with open(f"./marginal_dist/{model_name}/kl_divergence.txt", "a") as f:
+            f.write(f"Feature {feature_names[feature_index]}: {kl_divergence}\n")
+            
 # Method 2: Multivariate Distribution Comparison
 def multivariate_distribution_comparison(
     real_data, generated_data, model_name, feature_names, principal_components=2
