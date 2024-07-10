@@ -1,0 +1,109 @@
+{
+    "os": "Linux-6.1.85+-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "heartbeatAt": "2024-07-10T10:11:36.886455",
+    "startedAt": "2024-07-10T10:11:36.038650",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--lr",
+        "0.002",
+        "--epochs",
+        "750",
+        "--latent_dim",
+        "30"
+    ],
+    "state": "running",
+    "program": "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py",
+    "codePathLocal": "main.py",
+    "codePath": "TVAE/main.py",
+    "host": "ba55b569963c",
+    "username": "root",
+    "executable": "/usr/bin/python3",
+    "cpu_count": 6,
+    "cpu_count_logical": 12,
+    "cpu_freq": {
+        "current": 2200.216,
+        "min": 0.0,
+        "max": 0.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.216,
+            "min": 0.0,
+            "max": 0.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 201.22513961791992,
+            "used": 27.958908081054688
+        }
+    },
+    "gpu": "NVIDIA L4",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA L4",
+            "memory_total": 24152899584
+        }
+    ],
+    "memory": {
+        "total": 52.96144104003906
+    }
+}
