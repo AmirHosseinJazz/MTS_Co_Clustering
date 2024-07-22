@@ -4,66 +4,66 @@ import itertools
 import subprocess
 
 if __name__ == "__main__":
-    all_experiments = os.listdir("../Clustering/experiment_embedded_data")
-    #  run downstream forecast for all experiments as args
-    for _experiment in all_experiments:
-        try:
-            print(f"Running an experiment with {_experiment}")
-            cmd = [
-                "python",
-                "Downstream_Forecast.py",
-                "--experiment_technique",
-                "Clustering",
-                "--experiment_type",
-                "embedded_data",
-                "--experiment_name",
-                _experiment,
-            ]
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
-        except Exception as e:
-            print(f"Error: {e}")
-            print(f"Failed to run with hyperparameters: {_experiment}")
-    all_experiments = os.listdir("../Clustering/experiment_raw_data")
-    #  run downstream forecast for all experiments as args
-    for _experiment in all_experiments:
-        try:
-            print(f"Running an experiment with {_experiment}")
-            cmd = [
-                "python",
-                "Downstream_Forecast.py",
-                "--experiment_technique",
-                "Clustering",
-                "--experiment_type",
-                "raw_data",
-                "--experiment_name",
-                _experiment,
-            ]
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
-        except Exception as e:
-            print(f"Error: {e}")
-            print(f"Failed to run with hyperparameters: {_experiment}")
+    # all_experiments = os.listdir("../Clustering/experiment_embedded_data")
+    # #  run downstream forecast for all experiments as args
+    # for _experiment in all_experiments:
+    #     try:
+    #         print(f"Running an experiment with {_experiment}")
+    #         cmd = [
+    #             "python",
+    #             "Downstream_Forecast.py",
+    #             "--experiment_technique",
+    #             "Clustering",
+    #             "--experiment_type",
+    #             "embedded_data",
+    #             "--experiment_name",
+    #             _experiment,
+    #         ]
+    #         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+    #     except Exception as e:
+    #         print(f"Error: {e}")
+    #         print(f"Failed to run with hyperparameters: {_experiment}")
+    # all_experiments = os.listdir("../Clustering/experiment_raw_data")
+    # #  run downstream forecast for all experiments as args
+    # for _experiment in all_experiments:
+    #     try:
+    #         print(f"Running an experiment with {_experiment}")
+    #         cmd = [
+    #             "python",
+    #             "Downstream_Forecast.py",
+    #             "--experiment_technique",
+    #             "Clustering",
+    #             "--experiment_type",
+    #             "raw_data",
+    #             "--experiment_name",
+    #             _experiment,
+    #         ]
+    #         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+    #     except Exception as e:
+    #         print(f"Error: {e}")
+    #         print(f"Failed to run with hyperparameters: {_experiment}")
 
-    all_experiments = os.listdir("../Clustering/experiment_simple_clustering")
-    #  run downstream forecast for all experiments as args
-    for _experiment in all_experiments:
-        try:
-            print(f"Running an experiment with {_experiment}")
-            cmd = [
-                "python",
-                "Downstream_Forecast.py",
-                "--experiment_technique",
-                "Clustering",
-                "--experiment_type",
-                "simple_clustering",
-                "--experiment_name",
-                _experiment,
-            ]
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
-        except Exception as e:
-            print(f"Error: {e}")
-            print(f"Failed to run with hyperparameters: {_experiment}")
+    # all_experiments = os.listdir("../Clustering/experiment_simple_clustering")
+    # #  run downstream forecast for all experiments as args
+    # for _experiment in all_experiments:
+    #     try:
+    #         print(f"Running an experiment with {_experiment}")
+    #         cmd = [
+    #             "python",
+    #             "Downstream_Forecast.py",
+    #             "--experiment_technique",
+    #             "Clustering",
+    #             "--experiment_type",
+    #             "simple_clustering",
+    #             "--experiment_name",
+    #             _experiment,
+    #         ]
+    #         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+    #     except Exception as e:
+    #         print(f"Error: {e}")
+    #         print(f"Failed to run with hyperparameters: {_experiment}")
 
-    all_experiments = os.listdir("../Co-Clustering/experiment_BiPartite_Embedded")
+    all_experiments = os.listdir("../Co-Clustering/experiment_BSGP_Embedded")
     #  run downstream forecast for all experiments as args
     for _experiment in all_experiments:
         try:
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 "--experiment_technique",
                 "Co-Clustering",
                 "--experiment_type",
-                "BiPartite_Embedded",
+                "BSGP_Embedded",
                 "--experiment_name",
                 _experiment,
             ]
@@ -82,22 +82,62 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error: {e}")
             print(f"Failed to run with hyperparameters: {_experiment}")
-    # all_experiments = os.listdir("../Co-Clustering/experiment_BiPartite")
-    # #  run downstream forecast for all experiments as args
-    # for _experiment in all_experiments:
-    #     try:
-    #         print(f"Running an experiment with {_experiment}")
-    #         cmd = [
-    #             "python",
-    #             "Downstream_Forecast.py",
-    #             "--experiment_technique",
-    #             "Co-Clustering",
-    #             "--experiment_type",
-    #             "BiPartite_Embedded",
-    #             "--experiment_name",
-    #             _experiment,
-    #         ]
-    #         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
-    #     except Exception as e:
-    #         print(f"Error: {e}")
-    #         print(f"Failed to run with hyperparameters: {_experiment}")
+
+    all_experiments = os.listdir("../Co-Clustering/experiment_BSGP_Raw")
+    #  run downstream forecast for all experiments as args
+    for _experiment in all_experiments:
+        try:
+            print(f"Running an experiment with {_experiment}")
+            cmd = [
+                "python",
+                "Downstream_Forecast.py",
+                "--experiment_technique",
+                "Co-Clustering",
+                "--experiment_type",
+                "BSGP_Raw",
+                "--experiment_name",
+                _experiment,
+            ]
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+        except Exception as e:
+            print(f"Error: {e}")
+            print(f"Failed to run with hyperparameters: {_experiment}")
+    all_experiments = os.listdir("../Co-Clustering/experiment_Spectral_Embedded")
+    #  run downstream forecast for all experiments as args
+    for _experiment in all_experiments:
+        try:
+            print(f"Running an experiment with {_experiment}")
+            cmd = [
+                "python",
+                "Downstream_Forecast.py",
+                "--experiment_technique",
+                "Co-Clustering",
+                "--experiment_type",
+                "Spectral_Embedded",
+                "--experiment_name",
+                _experiment,
+            ]
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+        except Exception as e:
+            print(f"Error: {e}")
+            print(f"Failed to run with hyperparameters: {_experiment}")
+
+    all_experiments = os.listdir("../Co-Clustering/experiment_Spectral_Raw")
+    #  run downstream forecast for all experiments as args
+    for _experiment in all_experiments:
+        try:
+            print(f"Running an experiment with {_experiment}")
+            cmd = [
+                "python",
+                "Downstream_Forecast.py",
+                "--experiment_technique",
+                "Co-Clustering",
+                "--experiment_type",
+                "Spectral_Raw",
+                "--experiment_name",
+                _experiment,
+            ]
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+        except Exception as e:
+            print(f"Error: {e}")
+            print(f"Failed to run with hyperparameters: {_experiment}")
