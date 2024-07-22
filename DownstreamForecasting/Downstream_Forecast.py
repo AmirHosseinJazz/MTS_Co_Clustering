@@ -97,16 +97,21 @@ def main(experiment_name, experiment_technique, experiment_type):
         partitions["Cluster"] = partitions["Cluster"].apply(
             lambda x: int(str(x).replace(":", ""))
         )
-    except:
-        partitions = pd.read_csv(
-            f"../{experiment_technique}/experiment_{experiment_type}/{experiment_name}/partition.csv",
-            header=None,
-            names=["Cluster"],
-        )
-        partitions["sample"] = partitions.index
-        partitions["Cluster"] = partitions["Cluster"].apply(
-            lambda x: int(float((str(x).replace(":", ""))))
-        )
+    except Exception as e1:
+        print(f"First read attempt failed with error: {e1}")
+        try:
+            partitions = pd.read_csv(
+                f"../{experiment_technique}/experiment_{experiment_type}/{experiment_name}/partition.csv",
+                header=None,
+                names=["Cluster"],
+            )
+            partitions["sample"] = partitions.index
+            partitions["Cluster"] = partitions["Cluster"].apply(
+                lambda x: int(float((str(x).replace(":", ""))))
+            )
+        except Exception as e2:
+            print(f"Second read attempt failed with error: {e2}")
+            return
     print(partitions.head())
     print(f"Number of clusters: {partitions['Cluster'].nunique()}")
 
