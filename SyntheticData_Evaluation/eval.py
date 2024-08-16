@@ -131,6 +131,8 @@ def multivariate_distribution_comparison(
         generated_data_pca[:, 0], generated_data_pca[:, 1], alpha=0.5, label="Generated"
     )
     plt.title("PCA of Real and Generated Data")
+    plt.xlabel("Principal Component 1")
+    plt.ylabel("Principal Component 2")
     plt.legend()
     plt.savefig(f"./dist_compare/{model_name}/pca_comparison.png")
 
@@ -138,33 +140,37 @@ def multivariate_distribution_comparison(
     print("t-SNE Visualization")
     combined_data = np.concatenate([real_data_reshaped, generated_data_reshaped])
 
-    # Fit t-SNE on the combined dataset
-    tsne = TSNE(n_components=2, perplexity=30, n_iter=300, random_state=42)
-    combined_tsne = tsne.fit_transform(combined_data)
+    # # Fit t-SNE on the combined dataset
+    # tsne = TSNE(n_components=2, perplexity=30, n_iter=300, random_state=42)
+    # combined_tsne = tsne.fit_transform(combined_data)
 
-    # Split the transformed data back into real and generated sets
-    num_real_samples = real_data_reshaped.shape[0]
-    real_data_tsne = combined_tsne[:num_real_samples]
-    generated_data_tsne = combined_tsne[num_real_samples:]
+    # # Split the transformed data back into real and generated sets
+    # num_real_samples = real_data_reshaped.shape[0]
+    # real_data_tsne = combined_tsne[:num_real_samples]
+    # generated_data_tsne = combined_tsne[num_real_samples:]
 
-    plt.figure(figsize=(10, 6))
-    plt.scatter(
-        real_data_tsne[:, 0],
-        real_data_tsne[:, 1],
-        c="blue",
-        label="Real Data",
-        alpha=0.5,
-    )
-    plt.scatter(
-        generated_data_tsne[:, 0],
-        generated_data_tsne[:, 1],
-        c="red",
-        label="Generated Data",
-        alpha=0.5,
-    )
-    plt.title("t-SNE visualization of Real and Generated Data")
-    plt.legend()
-    plt.savefig(f"./dist_compare/{model_name}/tsne_comparison.png")
+    # plt.figure(figsize=(10, 6))
+    # plt.scatter(
+    #     real_data_tsne[:, 0],
+    #     real_data_tsne[:, 1],
+    #     c="blue",
+    #     label="Real Data",
+    #     alpha=0.5,
+    # )
+    # plt.scatter(
+    #     generated_data_tsne[:, 0],
+    #     generated_data_tsne[:, 1],
+    #     c="red",
+    #     label="Generated Data",
+    #     alpha=0.5,
+    # )
+    # #set axis title
+    # plt.xlabel("t-SNE Component 1")
+    # plt.ylabel("t-SNE Component 2")
+
+    # plt.title("t-SNE visualization of Real and Generated Data")
+    # plt.legend()
+    # plt.savefig(f"./dist_compare/{model_name}/tsne_comparison.png")
 
     # 4. Multivariate Gaussian Distribution Comparison
     print("Multivariate Gaussian Distribution Comparison")

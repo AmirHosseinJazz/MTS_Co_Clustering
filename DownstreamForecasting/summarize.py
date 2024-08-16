@@ -59,7 +59,7 @@ def summarize_results():
                     }
                 )
         if k.split("_")[0] == "Co-Clustering":
-            if "Embedded" in k:
+            if "Spectral" in k:
                 temp = pd.read_csv(f"./evaluation_results/{k}")
                 # take date out of k regex
                 pattern = r"(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})"
@@ -71,7 +71,7 @@ def summarize_results():
                 results.append(
                     {
                         "Technique": "Co-Clustering",
-                        "Type": "Embedded",
+                        "Type": "Spectral-BiClustering",
                         "Date": date,
                         "MSE": temp["MSE"].mean(),
                     }
