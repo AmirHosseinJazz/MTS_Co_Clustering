@@ -3,9 +3,10 @@ import os
 from datetime import datetime
 import numpy as np
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN, SpectralClustering
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, davies_bouldin_score
 import pandas as pd
 import argparse
+from sklearn.preprocessing import StandardScaler
 
 
 ## Main Function
@@ -17,6 +18,7 @@ def main(
     hierarchical_linkage: str,
     dbscan_eps: float,
     dbscan_min_samples: int,
+    dbscan_metric: str,
     spectral_num_clusters: int,
     spectral_affinity: str,
     model_name: str,
@@ -47,15 +49,16 @@ def main(
     info_pd.loc[4] = ["Percentile", "N/A"]
     info_pd.loc[5] = ["Clustering Algorithm", clustering_algorithm]
     info_pd.loc[6] = ["Model Name", model_name]
-
     if clustering_algorithm == "k_means":
         print(f"Running Kmeans Algorithm...")
-        kmeans = KMeans(n_clusters=k_means_num_clusters, n_init=k_means_num_init)
+        kmeans = KMeans(
+            n_clusters=k_means_num_clusters, n_init=k_means_num_init, random_state=0
+        )
         kmeans_clusters = kmeans.fit_predict(data)
         kmeans_assignments = [
             (idx, cluster) for idx, cluster in enumerate(kmeans_clusters)
         ]
-
+        dbi = davies_bouldin_score(data, kmeans_clusters)
         with open(f"{save_dir}/assignments.txt", "w") as f:
             for item in kmeans_assignments:
                 f.write(f"sample {item[0]}: cluster {item[1]}")
@@ -66,11 +69,13 @@ def main(
             "Silhouette Score",
             silhouette_score(data, kmeans_clusters),
         ]
-        info_pd.loc[9] = ["Davies Bouldin Index", "N/A"]
+        info_pd.loc[9] = ["Davies Bouldin Index", dbi]
         info_pd.loc[10] = ["Num Communities", "N/A"]
         info_pd.loc[11] = ["K Means Num Clusters", k_means_num_clusters]
         info_pd.loc[12] = ["K Means Num Init", k_means_num_init]
+        info_pd.loc[13] = ["# of Clusters", len(set(kmeans_clusters))]
         info_pd.to_csv(f"{save_dir}/info.csv", index=False)
+
     elif clustering_algorithm == "hierarchical":
         print(f"Running Hierarchical Algorithm...")
         hiearchical = AgglomerativeClustering(
@@ -80,7 +85,7 @@ def main(
         hiearchical_assignments = [
             (idx, cluster) for idx, cluster in enumerate(hiearchical_clusters)
         ]
-
+        dbi = davies_bouldin_score(data, hiearchical_clusters)
         with open(f"{save_dir}/assignments.txt", "w") as f:
             for item in hiearchical_assignments:
                 f.write(f"sample {item[0]}: cluster {item[1]}")
@@ -90,15 +95,21 @@ def main(
             "Silhouette Score",
             silhouette_score(data, hiearchical_clusters),
         ]
-        info_pd.loc[9] = ["Davies Bouldin Index", "N/A"]
+        info_pd.loc[9] = ["Davies Bouldin Index", dbi]
         info_pd.loc[10] = ["Num Communities", "N/A"]
         info_pd.loc[11] = ["Hierarchical Num Clusters", hierarchical_num_clusters]
         info_pd.loc[12] = ["Hierarchical Linkage", hierarchical_linkage]
+        info_pd.loc[13] = ["# of Clusters", len(set(hiearchical_clusters))]
         info_pd.to_csv(f"{save_dir}/info.csv", index=False)
+
     elif clustering_algorithm == "dbscan":
         print(f"Running DBSCAN Algorithm...")
-        dbscan = DBSCAN(eps=dbscan_eps, min_samples=dbscan_min_samples)
-        dbscan_clusters = dbscan.fit_predict(data)
+        dbscan = DBSCAN(
+            eps=dbscan_eps, min_samples=dbscan_min_samples, metric=dbscan_metric
+        )
+        data_scaled = StandardScaler().fit_transform(data)
+
+        dbscan_clusters = dbscan.fit_predict(data_scaled)
         dbscan_assignments = [
             (idx, cluster) for idx, cluster in enumerate(dbscan_clusters)
         ]
@@ -123,11 +134,14 @@ def main(
                 if len(set(dbscan_clusters)) > 1
                 else "Undefined"
             )
+        # dbi=davies_bouldin_score(data, dbscan_clusters)
         info_pd.loc[8] = ["Silhouette Score", dbscan_silhouette]
         info_pd.loc[9] = ["Davies Bouldin Index", "N/A"]
         info_pd.loc[10] = ["Num Communities", "N/A"]
         info_pd.loc[11] = ["DBSCAN Eps", dbscan_eps]
         info_pd.loc[12] = ["DBSCAN Min Samples", dbscan_min_samples]
+        info_pd.loc[13] = ["# of Clusters", len(set(dbscan_clusters))]
+        info_pd.loc[14] = ["DB SCAN Metric", dbscan_metric]
         info_pd.to_csv(f"{save_dir}/info.csv", index=False)
     elif clustering_algorithm == "spectral":
         print(f"Running Spectral Algorithm...")
@@ -138,7 +152,7 @@ def main(
         spectral_assignments = [
             (idx, cluster) for idx, cluster in enumerate(spectral_clusters)
         ]
-
+        dbi = davies_bouldin_score(data, spectral_clusters)
         with open(f"{save_dir}/assignments.txt", "w") as f:
             for item in spectral_assignments:
                 f.write(f"sample {item[0]}: cluster {item[1]}")
@@ -148,10 +162,11 @@ def main(
             "Silhouette Score",
             silhouette_score(data, spectral_clusters),
         ]
-        info_pd.loc[9] = ["Davies Bouldin Index", "N/A"]
+        info_pd.loc[9] = ["Davies Bouldin Index", dbi]
         info_pd.loc[10] = ["Num Communities", "N/A"]
         info_pd.loc[11] = ["Spectral Num Clusters", spectral_num_clusters]
         info_pd.loc[12] = ["Spectral Affinity", spectral_affinity]
+        info_pd.loc[13] = ["# of Clusters", len(set(spectral_clusters))]
         info_pd.to_csv(f"{save_dir}/info.csv", index=False)
 
 
@@ -202,6 +217,12 @@ if __name__ == "__main__":
         help="Minimum samples for DBSCAN. Default is 5.",
     )
     parser.add_argument(
+        "--db_scan_metric",
+        type=str,
+        default="euclidean",
+        help="Metric for DBSCAN. Default is euclidean.",
+    )
+    parser.add_argument(
         "--spectral_num_clusters",
         type=int,
         default=5,
@@ -230,6 +251,7 @@ if __name__ == "__main__":
         args.hierarchical_linkage,
         args.dbscan_eps,
         args.dbscan_min_samples,
+        args.db_scan_metric,
         args.spectral_num_clusters,
         args.spectral_affinity,
         args.model_name,

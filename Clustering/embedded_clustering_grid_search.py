@@ -2,6 +2,7 @@ import itertools
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+
 # Define the hyperparameters and their possible values
 #  parser = argparse.ArgumentParser(
 #         description="Run clustering on embedded data with various configurations."
@@ -82,16 +83,37 @@ from tqdm import tqdm
 #         args.model_name,
 #     )
 clustering_algorithms = ["k_means", "hierarchical", "dbscan", "spectral"]
-k_means_num_clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-k_means_num_init = [5, 10, 15, 20]
-hierarchical_num_clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-hierarchical_linkage = ["ward", "complete", "average", "single"]
-dbscan_eps = [0.1, 0.2, 0.3, 0.4, 0.5]
-dbscan_min_samples = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-spectral_num_clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-spectral_affinity = ["nearest_neighbors", "rbf"]
-model_name = ["TimeVAE_model9"]
+k_means_num_clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+k_means_num_init = [20]
 
+hierarchical_num_clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+hierarchical_linkage = ["ward", "complete", "average", "single"]
+
+dbscan_eps = [
+    5,
+    5.5,
+    6,
+    6.5,
+    7,
+    7.5,
+    8,
+    8.5,
+    9,
+    9.5,
+    10,
+    10.5,
+    11,
+    11.5,
+    12,
+]
+dbscan_min_samples = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+db_scan_metric = ["euclidean", "manhattan", "cosine"]
+
+
+spectral_num_clusters = list(range(2, 25))
+spectral_affinity = ["nearest_neighbors", "rbf"]
+
+model_name = ["TimeVAE_model9"]
 
 
 # Generate all combinations of hyperparameters k means
@@ -118,6 +140,7 @@ combinations_dbscan = list(
         # "dbscan",
         dbscan_eps,
         dbscan_min_samples,
+        db_scan_metric,
         # model_name,
     )
 )
@@ -130,6 +153,8 @@ combinations_spectral = list(
         # model_name,
     )
 )
+
+
 def run_script_kmeans(combination):
     (
         # clustering_algorithm,
@@ -158,6 +183,7 @@ def run_script_kmeans(combination):
         print(f"Failed to run with hyperparameters: {combination}")
         return None
 
+
 def run_script_hierarchical(combination):
     (
         # clustering_algorithm,
@@ -185,12 +211,14 @@ def run_script_hierarchical(combination):
         print(f"Error: {e}")
         print(f"Failed to run with hyperparameters: {combination}")
         return None
-    
+
+
 def run_script_dbscan(combination):
     (
         # clustering_algorithm,
         dbscan_eps,
         dbscan_min_samples,
+        db_scan_metric,
         # model_name,
     ) = combination
     try:
@@ -205,6 +233,8 @@ def run_script_dbscan(combination):
             str(dbscan_eps),
             "--dbscan_min_samples",
             str(dbscan_min_samples),
+            "--db_scan_metric",
+            str(db_scan_metric),
             "--model_name",
             # model_name,
             "TimeVAE_model9",
@@ -215,6 +245,7 @@ def run_script_dbscan(combination):
         print(f"Error: {e}")
         print(f"Failed to run with hyperparameters: {combination}")
         return None
+
 
 def run_script_spectral(combination):
     (
@@ -248,21 +279,39 @@ def run_script_spectral(combination):
 
 
 # Use ThreadPoolExecutor to run experiments in parallel
-print("Total number of combinations:", len(combinations_kmeans)+len(combinations_hierarchical)+len(combinations_dbscan)+len(combinations_spectral))
+print(
+    "Total number of combinations:",
+    len(combinations_kmeans)
+    + len(combinations_hierarchical)
+    + len(combinations_dbscan)
+    + len(combinations_spectral),
+)
 results = []
-with ThreadPoolExecutor(max_workers=8) as executor:  # Adjust max_workers based on your CPU
+with ThreadPoolExecutor(
+    max_workers=8
+) as executor:  # Adjust max_workers based on your CPU
     # Create a map of future tasks, and wrap them with tqdm for progress display
-    futures = [executor.submit(run_script_kmeans, combination) for combination in combinations_kmeans]
+    # futures = [
+    #     executor.submit(run_script_kmeans, combination)
+    #     for combination in combinations_kmeans
+    # ]
+    # for future in tqdm(as_completed(futures), total=len(futures)):
+    #     results.append(future.result())
+    # futures = [
+    #     executor.submit(run_script_hierarchical, combination)
+    #     for combination in combinations_hierarchical
+    # ]
+    # for future in tqdm(as_completed(futures), total=len(futures)):
+    #     results.append(future.result())
+    # futures = [
+    #     executor.submit(run_script_dbscan, combination)
+    #     for combination in combinations_dbscan
+    # ]
+    # for future in tqdm(as_completed(futures), total=len(futures)):
+    #     results.append(future.result())
+    futures = [
+        executor.submit(run_script_spectral, combination)
+        for combination in combinations_spectral
+    ]
     for future in tqdm(as_completed(futures), total=len(futures)):
         results.append(future.result())
-    futures = [executor.submit(run_script_hierarchical, combination) for combination in combinations_hierarchical]
-    for future in tqdm(as_completed(futures), total=len(futures)):
-        results.append(future.result())
-    futures = [executor.submit(run_script_dbscan, combination) for combination in combinations_dbscan]
-    for future in tqdm(as_completed(futures), total=len(futures)):
-        results.append(future.result())
-    futures = [executor.submit(run_script_spectral, combination) for combination in combinations_spectral]
-    for future in tqdm(as_completed(futures), total=len(futures)):
-        results.append(future.result())
-    
-    

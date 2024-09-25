@@ -15,28 +15,28 @@ def eval():
     ]
     # read all data
     data = []
-    for folder in folders:
-        try:
-            df = pd.read_csv(os.path.join(folder, "info.csv"))
-            df = df.T
-            df.columns = df.iloc[0]
-            df = df[1:]
-            df["folder"] = folder
-            data.append(df)
-            df["Type"]="Graph+Raw"
-        except:
-            print("error in reading data from", folder)
-    for folder in folders_2:
-        try:
-            df = pd.read_csv(os.path.join(folder, "info.csv"))
-            df = df.T
-            df.columns = df.iloc[0]
-            df = df[1:]
-            df["folder"] = folder
-            df["Type"]="Graph+Embedded"
-            data.append(df)
-        except:
-            print("error in reading data from", folder)
+    # for folder in folders:
+    #     try:
+    #         df = pd.read_csv(os.path.join(folder, "info.csv"))
+    #         df = df.T
+    #         df.columns = df.iloc[0]
+    #         df = df[1:]
+    #         df["folder"] = folder
+    #         data.append(df)
+    #         df["Type"]="Graph+Raw"
+    #     except:
+    #         print("error in reading data from", folder)
+    # for folder in folders_2:
+    #     try:
+    #         df = pd.read_csv(os.path.join(folder, "info.csv"))
+    #         df = df.T
+    #         df.columns = df.iloc[0]
+    #         df = df[1:]
+    #         df["folder"] = folder
+    #         df["Type"]="Graph+Embedded"
+    #         data.append(df)
+    #     except:
+    #         print("error in reading data from", folder)
     for folder in folders_3:
         try:
             df = pd.read_csv(os.path.join(folder, "info.csv"))
