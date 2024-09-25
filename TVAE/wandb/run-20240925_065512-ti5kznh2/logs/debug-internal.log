@@ -1,0 +1,13 @@
+{"time":"2024-09-25T06:55:12.990550168Z","level":"INFO","msg":"using version","core version":"0.18.1"}
+{"time":"2024-09-25T06:55:12.991654175Z","level":"INFO","msg":"created symlink","path":"/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/wandb/run-20240925_065512-ti5kznh2/logs/debug-core.log"}
+{"time":"2024-09-25T06:55:12.993884877Z","level":"INFO","msg":"using version","core version":"0.18.1"}
+{"time":"2024-09-25T06:55:12.994643099Z","level":"INFO","msg":"created symlink","path":"/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/wandb/run-20240925_065512-ti5kznh2/logs/debug-core.log"}
+{"time":"2024-09-25T06:55:12.999301828Z","level":"INFO","msg":"created new stream","id":"ti5kznh2"}
+{"time":"2024-09-25T06:55:12.999925853Z","level":"INFO","msg":"stream: started","id":"ti5kznh2"}
+{"time":"2024-09-25T06:55:13.000002924Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"ti5kznh2"}}
+{"time":"2024-09-25T06:55:13.000018403Z","level":"INFO","msg":"sender: started","stream_id":{"value":"ti5kznh2"}}
+{"time":"2024-09-25T06:55:12.999987514Z","level":"INFO","msg":"handler: started","stream_id":{"value":"ti5kznh2"}}
+{"time":"2024-09-25T06:55:13.365413955Z","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2024-09-25T06:55:13.371404499Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-09-25T06:55:23.371977939Z","level":"ERROR","msg":"monitor: memory: error sampling metrics: open /proc/22020/statm: no such file or directory"}
+{"time":"2024-09-25T06:55:23.372058435Z","level":"ERROR","msg":"monitor: cpu: error sampling metrics: open /proc/22020/stat: no such file or directory\nopen /proc/22020/status: no such file or directory"}

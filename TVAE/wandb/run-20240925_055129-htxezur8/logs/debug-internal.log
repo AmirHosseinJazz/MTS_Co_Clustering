@@ -1,0 +1,19 @@
+{"time":"2024-09-25T05:51:29.825298614Z","level":"INFO","msg":"using version","core version":"0.18.1"}
+{"time":"2024-09-25T05:51:29.826345178Z","level":"INFO","msg":"created symlink","path":"/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/wandb/run-20240925_055129-htxezur8/logs/debug-core.log"}
+{"time":"2024-09-25T05:51:29.82788411Z","level":"INFO","msg":"using version","core version":"0.18.1"}
+{"time":"2024-09-25T05:51:29.828453105Z","level":"INFO","msg":"created symlink","path":"/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/wandb/run-20240925_055129-htxezur8/logs/debug-core.log"}
+{"time":"2024-09-25T05:51:29.831957511Z","level":"INFO","msg":"created new stream","id":"htxezur8"}
+{"time":"2024-09-25T05:51:29.832882385Z","level":"INFO","msg":"stream: started","id":"htxezur8"}
+{"time":"2024-09-25T05:51:29.832905809Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"htxezur8"}}
+{"time":"2024-09-25T05:51:29.83295831Z","level":"INFO","msg":"sender: started","stream_id":{"value":"htxezur8"}}
+{"time":"2024-09-25T05:51:29.832958666Z","level":"INFO","msg":"handler: started","stream_id":{"value":"htxezur8"}}
+{"time":"2024-09-25T05:51:30.3265681Z","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2024-09-25T05:51:30.332324688Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-09-25T05:52:00.333386278Z","level":"ERROR","msg":"monitor: memory: error sampling metrics: open /proc/2256/statm: no such file or directory"}
+{"time":"2024-09-25T05:52:00.333445657Z","level":"ERROR","msg":"monitor: cpu: error sampling metrics: open /proc/2256/stat: no such file or directory\nopen /proc/2256/status: no such file or directory"}
+{"time":"2024-09-25T05:52:10.333846161Z","level":"ERROR","msg":"monitor: cpu: error sampling metrics: open /proc/2256/stat: no such file or directory\nopen /proc/2256/status: no such file or directory"}
+{"time":"2024-09-25T05:52:10.333926689Z","level":"ERROR","msg":"monitor: memory: error sampling metrics: open /proc/2256/statm: no such file or directory"}
+{"time":"2024-09-25T05:52:20.333238453Z","level":"ERROR","msg":"monitor: cpu: error sampling metrics: open /proc/2256/stat: no such file or directory\nopen /proc/2256/status: no such file or directory"}
+{"time":"2024-09-25T05:52:20.333358818Z","level":"ERROR","msg":"monitor: memory: error sampling metrics: open /proc/2256/statm: no such file or directory"}
+{"time":"2024-09-25T05:52:30.332974585Z","level":"ERROR","msg":"monitor: memory: error sampling metrics: open /proc/2256/statm: no such file or directory"}
+{"time":"2024-09-25T05:52:30.333020128Z","level":"ERROR","msg":"monitor: cpu: error sampling metrics: open /proc/2256/stat: no such file or directory\nopen /proc/2256/status: no such file or directory"}

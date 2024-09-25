@@ -1,0 +1,43 @@
+Epoch 1, Train Loss: 1499271.8194, Test Loss: 957743.5000
+Epoch 2, Train Loss: 686727.8472, Test Loss: 461026.1910
+Epoch 3, Train Loss: 385790.4653, Test Loss: 321210.5417
+Epoch 4, Train Loss: 297902.5677, Test Loss: 274459.5920
+Epoch 5, Train Loss: 259947.4896, Test Loss: 246130.8351
+Epoch 6, Train Loss: 238527.7326, Test Loss: 229313.7500
+Epoch 7, Train Loss: 226210.0885, Test Loss: 220886.8767
+Epoch 8, Train Loss: 221263.8524, Test Loss: 216188.6111
+Epoch 9, Train Loss: 216546.3438, Test Loss: 214761.3837
+Epoch 10, Train Loss: 214504.4601, Test Loss: 211314.9965
+Epoch 11, Train Loss: 211770.7292, Test Loss: 209469.6493
+Epoch 12, Train Loss: 210064.8854, Test Loss: 208756.4566
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/torch/optim/optimizer.py", line 89, in _use_grad
+    ret = func(self, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/optim/adam.py", line 226, in step
+    adam(
+  File "/usr/local/lib/python3.10/dist-packages/torch/optim/optimizer.py", line 161, in maybe_fallback
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/optim/adam.py", line 766, in adam
+    func(
+  File "/usr/local/lib/python3.10/dist-packages/torch/optim/adam.py", line 602, in _multi_tensor_adam
+    exp_avg_sq_sqrt = torch._foreach_sqrt(device_exp_avg_sqs)
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py", line 141, in <module>
+    main(params)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py", line 58, in main
+    model.fit(
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/TimeVAE.py", line 330, in fit
+    loss = self.train_step(batch, optimizer)
+  File "/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/TimeVAE.py", line 315, in train_step
+    optimizer.step()
+  File "/usr/local/lib/python3.10/dist-packages/torch/optim/optimizer.py", line 484, in wrapper
+    out = func(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/optim/optimizer.py", line 92, in _use_grad
+    torch.set_grad_enabled(prev_grad)
+  File "/usr/local/lib/python3.10/dist-packages/torch/autograd/grad_mode.py", line 187, in __init__
+    torch._C._set_grad_enabled(mode)
+KeyboardInterrupt

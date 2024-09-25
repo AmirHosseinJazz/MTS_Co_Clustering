@@ -1,0 +1,33 @@
+2024-09-25 06:45:26,776 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Current SDK version is 0.18.1
+2024-09-25 06:45:26,777 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Configure stats pid to 18872
+2024-09-25 06:45:26,777 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Loading settings from /root/.config/wandb/settings
+2024-09-25 06:45:26,778 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Loading settings from /content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/wandb/settings
+2024-09-25 06:45:26,778 WARNING MainThread:18872 [wandb_setup.py:_flush():77] Unknown environment variable: WANDB_SERVICE
+2024-09-25 06:45:26,778 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Loading settings from environment variables: {}
+2024-09-25 06:45:26,778 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Applying setup settings: {'mode': None, '_disable_service': None}
+2024-09-25 06:45:26,778 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Inferring run settings from compute environment: {'program_relpath': 'TVAE/main.py', 'program_abspath': '/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py', 'program': '/content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/main.py'}
+2024-09-25 06:45:26,778 INFO    MainThread:18872 [wandb_setup.py:_flush():77] Applying login settings: {}
+2024-09-25 06:45:26,778 INFO    MainThread:18872 [wandb_init.py:_log_setup():532] Logging user logs to /content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/wandb/run-20240925_064526-d6ff8ycu/logs/debug.log
+2024-09-25 06:45:26,779 INFO    MainThread:18872 [wandb_init.py:_log_setup():533] Logging internal logs to /content/drive/MyDrive/UM_Thesis/MTS_Co_Clustering/TVAE/wandb/run-20240925_064526-d6ff8ycu/logs/debug-internal.log
+2024-09-25 06:45:26,779 INFO    MainThread:18872 [wandb_init.py:init():616] calling init triggers
+2024-09-25 06:45:26,779 INFO    MainThread:18872 [wandb_init.py:init():623] wandb.init called with sweep_config: {}
+config: {'data_source': '29var', 'batch_size': 20, 'device': 'cuda', 'epochs': 750, 'latent_dim': 120, 'lr': 0.001, 'break_data': False, 'break_size': 60, 'leave_out_problematic_features': True, 'cutoff_data': True, 'feat_dim': 24, 'seq_len': 120, 'num_samples': 180, 'trend_poly': 2, 'custom_seas': [(4, 8)], 'reconstruction_wt': 3.0, 'hidden_layer_sizes': [50, 100, 200]}
+2024-09-25 06:45:26,779 INFO    MainThread:18872 [wandb_init.py:init():666] starting backend
+2024-09-25 06:45:26,779 INFO    MainThread:18872 [wandb_init.py:init():670] setting up manager
+2024-09-25 06:45:26,783 INFO    MainThread:18872 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-09-25 06:45:26,784 INFO    MainThread:18872 [wandb_init.py:init():678] backend started and connected
+2024-09-25 06:45:26,796 INFO    MainThread:18872 [wandb_init.py:init():773] updated telemetry
+2024-09-25 06:45:26,841 INFO    MainThread:18872 [wandb_init.py:init():806] communicating run to backend with 90.0 second timeout
+2024-09-25 06:45:27,159 INFO    MainThread:18872 [wandb_init.py:init():857] starting run threads in backend
+2024-09-25 06:45:27,554 INFO    MainThread:18872 [wandb_run.py:_console_start():2459] atexit reg
+2024-09-25 06:45:27,556 INFO    MainThread:18872 [wandb_run.py:_redirect():2307] redirect: wrap_raw
+2024-09-25 06:45:27,557 INFO    MainThread:18872 [wandb_run.py:_redirect():2372] Wrapping output streams.
+2024-09-25 06:45:27,558 INFO    MainThread:18872 [wandb_run.py:_redirect():2397] Redirects installed.
+2024-09-25 06:45:27,560 INFO    MainThread:18872 [wandb_init.py:init():900] run started, returning control to user process
+2024-09-25 06:46:14,515 INFO    MainThread:18872 [wandb_run.py:_finish():2158] finishing run amirhossein-jazayeri/timevae/d6ff8ycu
+2024-09-25 06:46:14,515 INFO    MainThread:18872 [wandb_run.py:_atexit_cleanup():2422] got exitcode: 0
+2024-09-25 06:46:14,516 INFO    MainThread:18872 [wandb_run.py:_restore():2404] restore
+2024-09-25 06:46:14,516 INFO    MainThread:18872 [wandb_run.py:_restore():2410] restore done
+2024-09-25 06:46:18,010 INFO    MainThread:18872 [wandb_run.py:_footer_history_summary_info():4037] rendering history
+2024-09-25 06:46:18,011 INFO    MainThread:18872 [wandb_run.py:_footer_history_summary_info():4069] rendering summary
+2024-09-25 06:46:18,019 INFO    MainThread:18872 [wandb_run.py:_footer_sync_info():3996] logging synced files

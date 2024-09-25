@@ -1,0 +1,62 @@
+_wandb:
+    value:
+        cli_version: 0.18.1
+        m: []
+        python_version: 3.10.12
+        t:
+            "1":
+                - 1
+                - 55
+            "2":
+                - 1
+                - 55
+            "3":
+                - 2
+                - 16
+                - 23
+                - 55
+            "4": 3.10.12
+            "5": 0.18.1
+            "8":
+                - 5
+            "12": 0.18.1
+            "13": linux-x86_64
+batch_size:
+    value: 20
+break_data:
+    value: false
+break_size:
+    value: 60
+custom_seas:
+    value:
+        - - 4
+          - 8
+cutoff_data:
+    value: true
+data_source:
+    value: 29var
+device:
+    value: cuda
+epochs:
+    value: 750
+feat_dim:
+    value: 24
+hidden_layer_sizes:
+    value:
+        - 50
+        - 100
+        - 200
+latent_dim:
+    value: 40
+leave_out_problematic_features:
+    value: true
+lr:
+    value: 0.002
+num_samples:
+    value: 180
+reconstruction_wt:
+    value: 3
+seq_len:
+    value: 120
+trend_poly:
+    value: 2
