@@ -113,7 +113,71 @@ db_scan_metric = ["euclidean", "manhattan", "cosine"]
 spectral_num_clusters = list(range(2, 25))
 spectral_affinity = ["nearest_neighbors", "rbf"]
 
-model_name = ["TimeVAE_model9"]
+# 1 through 68
+model_name = [
+    "TimeVAE_model7",
+    "TimeVAE_model8",
+    "TimeVAE_model9",
+    "TimeVAE_model10",
+    "TimeVAE_model11",
+    "TimeVAE_model12",
+    "TimeVAE_model13",
+    "TimeVAE_model14",
+    "TimeVAE_model15",
+    "TimeVAE_model16",
+    "TimeVAE_model17",
+    "TimeVAE_model18",
+    "TimeVAE_model19",
+    "TimeVAE_model20",
+    "TimeVAE_model21",
+    "TimeVAE_model22",
+    "TimeVAE_model23",
+    "TimeVAE_model24",
+    "TimeVAE_model25",
+    "TimeVAE_model26",
+    "TimeVAE_model27",
+    "TimeVAE_model28",
+    "TimeVAE_model29",
+    "TimeVAE_model30",
+    "TimeVAE_model31",
+    "TimeVAE_model32",
+    "TimeVAE_model33",
+    "TimeVAE_model34",
+    "TimeVAE_model35",
+    "TimeVAE_model36",
+    "TimeVAE_model37",
+    "TimeVAE_model38",
+    "TimeVAE_model39",
+    "TimeVAE_model40",
+    "TimeVAE_model41",
+    "TimeVAE_model42",
+    "TimeVAE_model43",
+    "TimeVAE_model44",
+    "TimeVAE_model45",
+    "TimeVAE_model46",
+    "TimeVAE_model47",
+    "TimeVAE_model48",
+    "TimeVAE_model49",
+    "TimeVAE_model50",
+    "TimeVAE_model51",
+    "TimeVAE_model52",
+    "TimeVAE_model53",
+    "TimeVAE_model54",
+    "TimeVAE_model55",
+    "TimeVAE_model56",
+    "TimeVAE_model57",
+    "TimeVAE_model58",
+    "TimeVAE_model59",
+    "TimeVAE_model60",
+    "TimeVAE_model61",
+    "TimeVAE_model62",
+    "TimeVAE_model63",
+    "TimeVAE_model64",
+    "TimeVAE_model65",
+    "TimeVAE_model66",
+    "TimeVAE_model67",
+    "TimeVAE_model68",
+]
 
 
 # Generate all combinations of hyperparameters k means
@@ -122,7 +186,7 @@ combinations_kmeans = list(
         # "k_means",
         k_means_num_clusters,
         k_means_num_init,
-        # model_name,
+        model_name,
     )
 )
 
@@ -131,7 +195,7 @@ combinations_hierarchical = list(
         # "hierarchical",
         hierarchical_num_clusters,
         hierarchical_linkage,
-        # model_name,
+        model_name,
     )
 )
 
@@ -141,7 +205,7 @@ combinations_dbscan = list(
         dbscan_eps,
         dbscan_min_samples,
         db_scan_metric,
-        # model_name,
+        model_name,
     )
 )
 
@@ -150,7 +214,7 @@ combinations_spectral = list(
         # "spectral",
         spectral_num_clusters,
         spectral_affinity,
-        # model_name,
+        model_name,
     )
 )
 
@@ -160,7 +224,7 @@ def run_script_kmeans(combination):
         # clustering_algorithm,
         k_means_num_clusters,
         k_means_num_init,
-        # model_name,
+        model_name,
     ) = combination
     try:
         print(f"Running an experiment with {combination}")
@@ -174,7 +238,7 @@ def run_script_kmeans(combination):
             "--k_means_num_init",
             str(k_means_num_init),
             "--model_name",
-            "TimeVAE_model9",
+            model_name,
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
@@ -189,7 +253,7 @@ def run_script_hierarchical(combination):
         # clustering_algorithm,
         hierarchical_num_clusters,
         hierarchical_linkage,
-        # model_name,
+        model_name,
     ) = combination
     try:
         print(f"Running an experiment with {combination}")
@@ -203,7 +267,8 @@ def run_script_hierarchical(combination):
             "--hierarchical_linkage",
             hierarchical_linkage,
             "--model_name",
-            "TimeVAE_model9",
+            # "TimeVAE_model9",
+            model_name,
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
@@ -219,7 +284,7 @@ def run_script_dbscan(combination):
         dbscan_eps,
         dbscan_min_samples,
         db_scan_metric,
-        # model_name,
+        model_name,
     ) = combination
     try:
         print(f"Running an experiment with {combination}")
@@ -236,8 +301,8 @@ def run_script_dbscan(combination):
             "--db_scan_metric",
             str(db_scan_metric),
             "--model_name",
-            # model_name,
-            "TimeVAE_model9",
+            model_name,
+            # "TimeVAE_model9",
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
@@ -252,7 +317,7 @@ def run_script_spectral(combination):
         # clustering_algorithm,
         spectral_num_clusters,
         spectral_affinity,
-        # model_name,
+        model_name,
     ) = combination
     try:
         print(f"Running an experiment with {combination}")
@@ -267,8 +332,8 @@ def run_script_spectral(combination):
             "--spectral_affinity",
             spectral_affinity,
             "--model_name",
-            # model_name,
-            "TimeVAE_model9",
+            model_name,
+            # "TimeVAE_model9",
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
         return result.stdout
