@@ -136,14 +136,16 @@ def main(experiment_name, experiment_technique, experiment_type):
     for key, data_cluster in clusters.items():
         print(f"Cluster {key + 1}")
         print(f"Data shape: {data_cluster.shape}")
-        if data_cluster.shape[0] <= 5:
+        if data_cluster.shape[0] <= 1:
             print("Skipping cluster due to insufficient data")
             continue
-        dataset = SlidingWindowDataset(data_cluster, window_size=50)
-        print(f"Dataset length: {len(dataset)}")
+        datasetTest=SlidingWindowDataset(data_cluster[:,80:,:], window_size=20)
+        datasetTrain=SlidingWindowDataset(data_cluster[:,:80,:], window_size=20)
+        print(f"Dataset length: {len(datasetTrain)}")
+        print(f"Train dataset length: {len(datasetTrain)}")
 
-        train_loader = DataLoader(dataset, batch_size=16, shuffle=True)
-        test_loader = DataLoader(dataset, batch_size=1, shuffle=False)
+        train_loader = DataLoader(datasetTrain, batch_size=16, shuffle=False)
+        test_loader = DataLoader(datasetTest, batch_size=1, shuffle=False)
 
         model = LSTMModel(
             input_size=data_cluster.shape[-1],
@@ -194,7 +196,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--experiment_name",
         type=str,
-        default="experiment_simple_clustering_2024-06-13_10-10-29",
+        default="experiment_simple_clustering_2024-09-25_09-17-53",
         help="Name of the experiment to run",
     )
     args = parser.parse_args()

@@ -155,9 +155,9 @@ def dtw_distances(data: np.ndarray) -> np.ndarray:
     return distances
 
 ### Clustering Algorithm
-def girvan_newman(G: nx.Graph, num_communities=None, target_modularity=None) -> tuple:
+def garvin_newman(G: nx.Graph, num_communities=None, target_modularity=None) -> tuple:
     """
-    Girvan-Newman algorithm for community detection
+    garvin-Newman algorithm for community detection
     Input:
     G: nx.Graph - The graph object
     num_communities: int - The number of communities to find - Provide either this or target_modularity
@@ -213,8 +213,8 @@ def main(
     real_data,
     feature_names,
     clustering_algorithm,
-    girvan_num_communities,
-    girvan_target_modularity,
+    garvin_num_communities,
+    garvin_target_modularity,
     spectral_num_clusters,
 ):
     # Load encoded data
@@ -350,22 +350,22 @@ def main(
         info_pd.loc[9] = ["Num Communities", len(set(partition.values()))]
         info_pd.to_csv(f"{save_dir}/info.csv", index=False)
 
-    elif clustering_algorithm == "girvan_newman":
+    elif clustering_algorithm == "garvin_newman":
         plt.figure(figsize=(20, 20))
-        print(f"Running Girvan Newman Algorithm...")
+        print(f"Running garvin Newman Algorithm...")
 
-        if girvan_num_communities:
-            print(f"Target Number of Communities: {girvan_num_communities}")
-            communities, modularity = girvan_newman(
-                G, num_communities=girvan_num_communities
+        if garvin_num_communities:
+            print(f"Target Number of Communities: {garvin_num_communities}")
+            communities, modularity = garvin_newman(
+                G, num_communities=garvin_num_communities
             )
-        elif girvan_target_modularity:
-            print(f"Target Modularity: {girvan_target_modularity}")
-            communities, modularity = girvan_newman(
-                G, target_modularity=girvan_target_modularity
+        elif garvin_target_modularity:
+            print(f"Target Modularity: {garvin_target_modularity}")
+            communities, modularity = garvin_newman(
+                G, target_modularity=garvin_target_modularity
             )
-        info_pd.loc[6] = ["girvan_modularity", girvan_target_modularity]
-        info_pd.loc[7] = ["girvan_communities", girvan_num_communities]
+        info_pd.loc[6] = ["garvin_modularity", garvin_target_modularity]
+        info_pd.loc[7] = ["garvin_communities", garvin_num_communities]
         # plot the community graph
         pos = nx.spring_layout(G)
 
@@ -376,7 +376,7 @@ def main(
         color_map = [partition.get(node) for node in G.nodes]
         nx.draw_networkx(G, pos, node_color=color_map, with_labels=True, node_size=50)
         plt.title(
-            f"Communities after Girvan-Newman Algorithm, Modularity: {modularity:.2f}"
+            f"Communities after garvin-Newman Algorithm, Modularity: {modularity:.2f}"
         )
         plt.savefig(f"{save_dir}/community_graph.png")
         ## Graph Details
@@ -397,53 +397,7 @@ def main(
         except:
             info_pd.loc[11] = ["Davies Bouldin Index", "Error in calculation"]
         info_pd.to_csv(f"{save_dir}/info.csv", index=False)
-    elif clustering_algorithm == "spectral":
-        print(f"Running Spectral Clustering Algorithm...")
-        L = nx.laplacian_matrix(G).astype(
-            float
-        )  # Ensure it's in float format for eigendecomposition
-        eigenvalues, eigenvectors = np.linalg.eigh(L.toarray())
-        k_smallest_eigenvectors = eigenvectors[
-            :, 1 : spectral_num_clusters + 1
-        ]  # Skip the first eigenvector (constant)
-        kmeans = KMeans(n_clusters=spectral_num_clusters)
-        kmeans.fit(k_smallest_eigenvectors)
-        clusters = kmeans.labels_
-        partition = {i: clusters[i] for i in range(len(clusters))}
-        try:
-            assert len(set(partition.values())) == spectral_num_clusters
-        except AssertionError:
-            print("Number of clusters does not match the target")
-            return
-        try:
-            print(calculate_modularity(G, clusters))
-        except:
-            print("Error in modularity calculation")
-        plt.figure(figsize=(20, 20))
-        pos = nx.spring_layout(G)
-        color_map = [partition.get(node) for node in G.nodes]
-        nx.draw_networkx(G, pos, node_color=color_map, with_labels=True, node_size=50)
-        nx.draw_networkx_labels(G, pos)
-        nx.draw_networkx_edges(G, pos, alpha=0.5)
-        plt.savefig(f"{save_dir}/Spectral_clustering_graph.png")
-        ## Graph Details
-        nx.write_gexf(G, f"{save_dir}/graph.gexf")
-        np.savetxt(
-            f"{save_dir}/partition.csv",
-            np.array(list(partition.values())),
-            delimiter=",",
-        )
-        # Evaluate the partition
-        info_pd.loc[6] = ["Modularity", calculate_modularity(G, clusters)]
-        info_pd.loc[7] = [
-            "Silhouette Score",
-            evaluate_partition_sil(real_data, partition),
-        ]
-        info_pd.loc[8] = ["Davies Bouldin Index", evaluate_davies_dbi(G, partition)]
-        info_pd.loc[9] = ["Num Communities", len(set(partition.values()))]
-        info_pd.to_csv(f"{save_dir}/info.csv", index=False)
-
-
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Run community detection on generated data with various configurations."
@@ -532,7 +486,7 @@ if __name__ == "__main__":
         choices=[
             "louvain",
             "spectral",
-            "girvan_newman",
+            "garvin_newman",
             "walktrap",
             "leading_eigenvector",
             "fast_greedy",
@@ -544,14 +498,14 @@ if __name__ == "__main__":
         help="The clustering algorithm to use. Default is louvain.",
     )
     parser.add_argument(
-        "--girvan_num_communities",
+        "--garvin_num_communities",
         default=None,
-        help="Number of communities to find with Girvan-Newman algorithm. Default is None.",
+        help="Number of communities to find with garvin-Newman algorithm. Default is None.",
     )
     parser.add_argument(
-        "--girvan_target_modularity",
+        "--garvin_target_modularity",
         default=0.1,
-        help="Target modularity to reach with Girvan-Newman algorithm. Default is None.",
+        help="Target modularity to reach with garvin-Newman algorithm. Default is None.",
     )
     parser.add_argument(
         "--spectral_num_clusters",
@@ -581,7 +535,7 @@ if __name__ == "__main__":
         real_data,
         feature_names,
         args.clustering_algorithm,
-        args.girvan_num_communities,
-        args.girvan_target_modularity,
+        args.garvin_num_communities,
+        args.garvin_target_modularity,
         args.spectral_num_clusters,
     )

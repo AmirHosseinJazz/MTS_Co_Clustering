@@ -2,6 +2,7 @@ import itertools
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+
 # Define the hyperparameters and their possible values
 graph_construction_methods = ["flatten", "aggregate"]
 distances = ["euclidean", "manhattan", "cosine", "dtw"]
@@ -9,9 +10,9 @@ connectivities = ["epsilon", "knn"]
 k_neighbors = [3, 5, 7]
 percentiles = [10, 20, 30]
 clustering_algorithms = ["louvain"]
-girvan_num_communities = [None, 2, 3, 4, 5]
-girvan_target_modularity = [None, 0.25, 0.3, 0.35, 0.4]
-spectral_num_clusters = list(range(2, 10))
+garvin_num_communities = [None, 2, 3, 4, 5]
+garvin_target_modularity = [None, 0.25, 0.3, 0.35, 0.4]
+spectral_num_clusters = list(range(2, 15))
 
 # Generate all combinations of hyperparameters
 combinations = list(
@@ -22,8 +23,8 @@ combinations = list(
         k_neighbors,
         percentiles,
         clustering_algorithms,
-        girvan_num_communities,
-        girvan_target_modularity,
+        garvin_num_communities,
+        garvin_target_modularity,
         spectral_num_clusters,
     )
 )
@@ -40,8 +41,8 @@ def run_script(combination):
         k,
         percentile,
         clustering_algorithm,
-        girvan_num_communities,
-        girvan_target_modularity,
+        garvin_num_communities,
+        garvin_target_modularity,
         spectral_num_clusters,
     ) = combination
 
@@ -110,10 +111,10 @@ def run_script(combination):
             str(percentile),
             "--clustering_algorithm",
             clustering_algorithm,
-            "--girvan_num_communities",
-            str(girvan_num_communities),
-            "--girvan_target_modularity",
-            str(girvan_target_modularity),
+            "--garvin_num_communities",
+            str(garvin_num_communities),
+            "--garvin_target_modularity",
+            str(garvin_target_modularity),
             "--spectral_num_clusters",
             str(spectral_num_clusters),
         ]
@@ -128,10 +129,14 @@ def run_script(combination):
 # Use ThreadPoolExecutor to run experiments in parallel
 print("Total number of combinations:", len(combinations))
 results = []
-with ThreadPoolExecutor(max_workers=8) as executor:  # Adjust max_workers based on your CPU
+with ThreadPoolExecutor(
+    max_workers=8
+) as executor:  # Adjust max_workers based on your CPU
     # Create a map of future tasks, and wrap them with tqdm for progress display
     futures = [executor.submit(run_script, combination) for combination in combinations]
-    for future in tqdm(as_completed(futures), total=len(futures), desc="Processing combinations"):
+    for future in tqdm(
+        as_completed(futures), total=len(futures), desc="Processing combinations"
+    ):
         result = future.result()
         if result is not None:
             results.append(result)
